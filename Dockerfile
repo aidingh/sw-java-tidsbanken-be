@@ -1,4 +1,12 @@
-FROM openjdk:17
+FROM maven:3.8.4-openjdk-17 AS maven
+
+WORKDIR /app
+COPY . .
+RUN mvn clean install -DskipTest
 ENV PORT 8080
-ADD /target/Time-Bank-API-Project-0.0.1-SNAPSHOT.jar app.jar
-ENTRYPOINT ["java","-jar","app.jar"]
+
+FROM openjdk:17 as runtime
+
+WORKDIR /app
+COPY --from=maven /app/target/*.jar /app/app.jar
+ENTRYPOINT ["java", "-jar", "app.jar"]
