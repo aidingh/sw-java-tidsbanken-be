@@ -1,5 +1,6 @@
 package com.example.timebankapiproject.models;
 
+import com.example.timebankapiproject.enums.VacationRequestStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,12 +15,12 @@ import java.util.Date;
 public class VacationRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    int id;
+    public int id;
     @Column
-    VacationRequestStatus status;
+    public VacationRequestStatus status;
     @Column
-    Date startPeriod;
+    public Date startPeriod;
     @Column
-    Date endPeriod;
+    public Date endPeriod;
 }
 

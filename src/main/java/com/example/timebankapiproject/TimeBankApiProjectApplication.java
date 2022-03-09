@@ -1,8 +1,8 @@
 package com.example.timebankapiproject;
 
+import com.example.timebankapiproject.enums.VacationRequestStatus;
 import com.example.timebankapiproject.models.UserModel;
 import com.example.timebankapiproject.models.VacationRequest;
-import com.example.timebankapiproject.models.VacationRequestStatus;
 import com.example.timebankapiproject.repository.UserRepository;
 import com.example.timebankapiproject.repository.VacationRequestRepository;
 import org.springframework.boot.CommandLineRunner;

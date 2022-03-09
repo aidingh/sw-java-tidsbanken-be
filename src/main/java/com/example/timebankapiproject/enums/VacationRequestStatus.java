@@ -1,4 +1,4 @@
-package com.example.timebankapiproject.models;
+package com.example.timebankapiproject.enums;
 
 public enum VacationRequestStatus {
     PENDING,
