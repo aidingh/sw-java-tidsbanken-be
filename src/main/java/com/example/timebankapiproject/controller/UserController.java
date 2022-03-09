@@ -1,10 +1,8 @@
 package com.example.timebankapiproject.controller;
 
 import com.example.timebankapiproject.models.UserModel;
-import com.example.timebankapiproject.models.VacationRequest;
+import com.example.timebankapiproject.models.VacationRequestModel;
 import com.example.timebankapiproject.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +20,7 @@ public class UserController {
     }
 
     @CrossOrigin
-    @GetMapping("/user")
+    @GetMapping("/user/all")
     public ResponseEntity<List<UserModel>> getUsers(){
         return userService.getAllUsers();
     }
@@ -36,7 +34,7 @@ public class UserController {
     public ResponseEntity <UserModel> createUser(@RequestBody UserModel userModel) {
         return userService.createUser(userModel);
     }
-    @PostMapping("/user")
+    @PatchMapping("/user/")
     public ResponseEntity <UserModel> updateUser(@RequestBody UserModel userModel) {
         return userService.updateUser(userModel);
     }
@@ -47,7 +45,7 @@ public class UserController {
     }
 
     @GetMapping("/user/{user_id}/requests")
-    public ResponseEntity <List<VacationRequest>> getUserVacationRequest(@PathVariable("user_id") Integer userId){
+    public ResponseEntity <List<VacationRequestModel>> getUserVacationRequest(@PathVariable("user_id") Integer userId){
         return userService.getUserVacationRequestsById(userId);
     }
 }
