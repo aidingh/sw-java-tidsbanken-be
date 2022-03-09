@@ -12,15 +12,17 @@ import java.util.Date;
 @Getter
 @Setter
 @Entity
-public class VacationRequest {
+public class VacationRequestModel {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    public int id;
+    private int id;
     @Column
-    public VacationRequestStatus status;
+    private String title;
     @Column
-    public Date startPeriod;
+    private VacationRequestStatus status;
     @Column
-    public Date endPeriod;
+    private Date startPeriod;
+    @Column
+    private Date endPeriod;
 }
 
