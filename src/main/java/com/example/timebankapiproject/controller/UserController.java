@@ -22,7 +22,7 @@ public class UserController {
     }
 
     @CrossOrigin
-    @GetMapping("/user/all")
+    @GetMapping("/user")
     public ResponseEntity<List<UserModel>> getUsers(){
         return userService.getAllUsers();
     }
@@ -36,12 +36,12 @@ public class UserController {
     public ResponseEntity <UserModel> createUser(@RequestBody UserModel userModel) {
         return userService.createUser(userModel);
     }
-    @PostMapping("/update/user")
+    @PostMapping("/user")
     public ResponseEntity <UserModel> updateUser(@RequestBody UserModel userModel) {
         return userService.updateUser(userModel);
     }
 
-    @DeleteMapping("/delete/user/{user_id}")
+    @DeleteMapping("/user/{user_id}")
     public ResponseEntity <Integer> deleteUser(@PathVariable("user_id") Integer userId){
         return userService.deleteUser(userId);
     }
