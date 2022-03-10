@@ -1,8 +1,8 @@
 package com.example.timebankapiproject;
 
+import com.example.timebankapiproject.enums.VacationRequestStatus;
 import com.example.timebankapiproject.models.UserModel;
-import com.example.timebankapiproject.models.VacationRequest;
-import com.example.timebankapiproject.models.VacationRequestStatus;
+import com.example.timebankapiproject.models.VacationRequestModel;
 import com.example.timebankapiproject.repository.UserRepository;
 import com.example.timebankapiproject.repository.VacationRequestRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -31,23 +31,23 @@ public class TimeBankApiProjectApplication {
             user.setName("aidin yaaao");
 
 
-            VacationRequest vacReq = new VacationRequest();
+            VacationRequestModel vacReq = new VacationRequestModel();
             vacReq.setStartPeriod(new Date());
             vacReq.setEndPeriod(new Date());
             vacReq.setStatus(VacationRequestStatus.APPROVED);
 
-            VacationRequest vacReq1 = new VacationRequest();
+            VacationRequestModel vacReq1 = new VacationRequestModel();
             vacReq1.setStartPeriod(new Date());
             vacReq1.setEndPeriod(new Date());
             vacReq1.setStatus(VacationRequestStatus.APPROVED);
 
-            List<VacationRequest> listOfRequests = new ArrayList<>();
+            List<VacationRequestModel> listOfRequests = new ArrayList<>();
             listOfRequests.add(vacReq1);
             listOfRequests.add(vacReq);
             vacRepo.save(vacReq);
             vacRepo.save(vacReq1);
 
-            user.setVacationRequests(listOfRequests);
+            user.setVacationRequestModels(listOfRequests);
             repo.save(user);
         };
     }

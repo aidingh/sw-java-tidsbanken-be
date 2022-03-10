@@ -21,7 +21,7 @@ public class UserModel {
     @Column
     public String email;
     @OneToMany
-    public List<VacationRequest> vacationRequests;
+    public List<VacationRequestModel> vacationRequestModels;
     @Column
     public boolean isAdmin;
 

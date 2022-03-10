@@ -1,5 +1,6 @@
 package com.example.timebankapiproject.models;
 
+import com.example.timebankapiproject.enums.VacationRequestStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,15 +12,17 @@ import java.util.Date;
 @Getter
 @Setter
 @Entity
-public class VacationRequest {
+public class VacationRequestModel {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    int id;
+    private int id;
     @Column
-    VacationRequestStatus status;
+    private String title;
     @Column
-    Date startPeriod;
+    private VacationRequestStatus status;
     @Column
-    Date endPeriod;
+    private Date startPeriod;
+    @Column
+    private Date endPeriod;
 }
 
