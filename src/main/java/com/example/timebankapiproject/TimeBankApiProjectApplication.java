@@ -24,7 +24,7 @@ public class TimeBankApiProjectApplication {
     @Bean
     CommandLineRunner runner(UserRepository repo, VacationRequestRepository vacRepo) {
         return args -> {
-            UserModel user = new UserModel();
+ /*           UserModel user = new UserModel();
             user.setAdmin(true);
             user.setEmail("användare.hej@gmail.com");
 
@@ -48,7 +48,7 @@ public class TimeBankApiProjectApplication {
             vacRepo.save(vacReq1);
 
             user.setVacationRequests(listOfRequests);
-            repo.save(user);
+            repo.save(user);*/
         };
     }
 }

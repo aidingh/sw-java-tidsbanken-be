@@ -1,6 +1,7 @@
 package com.example.timebankapiproject.configs;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -9,7 +10,7 @@ import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.jwt.*;
 
-@Configuration
+
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Value("${auth0.audience}")
@@ -23,20 +24,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         //http.csrf().disable().authorizeRequests().anyRequest().permitAll();
 
         http.authorizeRequests()
-                .anyRequest()
-                .authenticated()
-                .and()
-                .oauth2ResourceServer()
-                .jwt();
+                .mvcMatchers("/api/v1/").authenticated()
+                .and().cors()
+                .and().oauth2ResourceServer().jwt();
     }
 
+    @Bean
     public JwtDecoder jwtDecoder(){
-        OAuth2TokenValidator<Jwt> withAudience = new AudienceValidator(audience);
-        OAuth2TokenValidator<Jwt> withIssuer = JwtValidators.createDefaultWithIssuer(issuer);
-        OAuth2TokenValidator<Jwt> validator = new DelegatingOAuth2TokenValidator<>(withAudience, withIssuer);
+        NimbusJwtDecoder jwtDecoder = (NimbusJwtDecoder)
+                JwtDecoders.fromOidcIssuerLocation(issuer);
 
-        NimbusJwtDecoder jwtDecoder = (NimbusJwtDecoder) JwtDecoders.fromOidcIssuerLocation(issuer);
-        jwtDecoder.setJwtValidator(validator);
+        OAuth2TokenValidator<Jwt> audienceValidator = new AudienceValidator(audience);
+        OAuth2TokenValidator<Jwt> withIssuer = JwtValidators.createDefaultWithIssuer(issuer);
+        OAuth2TokenValidator<Jwt> withAudience = new DelegatingOAuth2TokenValidator<>(withIssuer, audienceValidator);
+
+        jwtDecoder.setJwtValidator(withAudience);
         return jwtDecoder;
     }
 }
