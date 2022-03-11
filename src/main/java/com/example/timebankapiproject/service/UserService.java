@@ -10,6 +10,7 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -20,6 +21,12 @@ import java.util.Optional;
 
 @Service
 public class UserService {
+
+
+    private final String clientId = "gcpFQMIuEMTPdur0XhbRekUKWLSsLF3K";
+    private final String clientSecret = "RTEExKEXK603fBA11Y4s22IsaBV95PE3YvvK3A6fVwa-_ms16Gp9JHvmjLQiq0dN";
+    private final String managementApiAudience = "https://dev-377qri7m.eu.auth0.com/api/v2/";
+    private final String roleIdAdmin = "rol_Osy55j9CI34DLcQF";
 
     @Autowired
     private UserRepository userRepository;
@@ -47,7 +54,6 @@ public class UserService {
     }
 
     public UserModel createUserInDatabase(UserModel userModel){
-
         UserModel user = new UserModel();
 
         if(userModel != null){
@@ -63,13 +69,11 @@ public class UserService {
         request.put("given_name", user.getFirstName());
         request.put("family_name", user.getLastName());
         request.put("connection", "Username-Password-Authentication");
-        // Send password to created account by email.
-        // Ask team
+        // TODO ask team how we should do with password creation and getting it to the created user.
         request.put("password", "hej/23vad&och%");
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        System.out.println(getManagementApiToken());
         headers.set("authorization", "Bearer " + getManagementApiToken());
 
         HttpEntity<String> entity = new HttpEntity<String>(request.toString(), headers);
@@ -80,6 +84,7 @@ public class UserService {
         return result;
     }
 
+    //TODO: Update user in auth0 as well
     public ResponseEntity<UserModel> updateUser(UserModel userModel){
         Optional<UserModel> userData = userRepository.findById(userModel.getId());
 
@@ -92,6 +97,7 @@ public class UserService {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    //TODO Delete User in auth0 as well
     public ResponseEntity<String> deleteUser(String userId){
        if(userRepository.existsById(userId)){
            userRepository.deleteById(userId);
@@ -112,7 +118,7 @@ public class UserService {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    public String getUserAuth0Id(ResponseEntity<String> response){
+    public String getUserIdFromAuth0(ResponseEntity<String> response){
         JSONObject json = new JSONObject(response.getBody().toString());
         JSONArray jsonArray = json.getJSONArray("identities");
         JSONObject nestedJson = new JSONObject(jsonArray.getJSONObject(0));
@@ -130,9 +136,9 @@ public class UserService {
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         JSONObject requestBody = new JSONObject();
-        requestBody.put("client_id", "gcpFQMIuEMTPdur0XhbRekUKWLSsLF3K");
-        requestBody.put("client_secret", "RTEExKEXK603fBA11Y4s22IsaBV95PE3YvvK3A6fVwa-_ms16Gp9JHvmjLQiq0dN");
-        requestBody.put("audience", "https://dev-377qri7m.eu.auth0.com/api/v2/");
+        requestBody.put("client_id", clientId);
+        requestBody.put("client_secret", clientSecret);
+        requestBody.put("audience", managementApiAudience);
         requestBody.put("grant_type", "client_credentials");
 
         HttpEntity<String> request = new HttpEntity<String>(requestBody.toString(), headers);
@@ -148,7 +154,7 @@ public class UserService {
         HttpResponse<String> roleResponse = null;
         try {
             System.out.println("before");
-            roleResponse = Unirest.post("https://dev-377qri7m.eu.auth0.com/api/v2/users/auth0|" + id + "/roles")
+            roleResponse = Unirest.post( managementApiAudience + "users/auth0|" + id + "/roles")
                     .header("content-type", "application/json")
                     .header("authorization", "Bearer " + getManagementApiToken())
                     .header("cache-control", "no-cache")

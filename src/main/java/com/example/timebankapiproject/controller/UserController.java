@@ -3,15 +3,8 @@ package com.example.timebankapiproject.controller;
 import com.example.timebankapiproject.models.UserModel;
 import com.example.timebankapiproject.models.VacationRequestModel;
 import com.example.timebankapiproject.service.UserService;
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.Unirest;
-import net.minidev.json.JSONObject;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
@@ -39,16 +32,18 @@ public class UserController {
 
     @PostMapping("/createUser")
     public ResponseEntity <String> createUser(@RequestBody UserModel userModel) {
-        ResponseEntity<String> response = userService.createUserInAuth0(userModel);
-        String id = userService.getUserAuth0Id(response);
+        ResponseEntity<String> createdUser = userService.createUserInAuth0(userModel);
+        String id = userService.getUserIdFromAuth0(createdUser);
+
         userModel.setId(id);
         userService.createUserInDatabase(userModel);
-        userService.giveRoleToAuth0User(id,"rol_Osy55j9CI34DLcQF");
 
+        if(userModel.isAdmin())
+            userService.giveRoleToAuth0User(id,"rol_Osy55j9CI34DLcQF");
 
-        // set and get Id from auth0
-        return response;
+        return createdUser;
     }
+
     @PatchMapping("/user/")
     public ResponseEntity <UserModel> updateUser(@RequestBody UserModel userModel) {
         return userService.updateUser(userModel);
