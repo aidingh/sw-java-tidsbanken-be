@@ -3,6 +3,8 @@ package com.example.timebankapiproject.controller;
 import com.example.timebankapiproject.models.UserModel;
 import com.example.timebankapiproject.models.VacationRequestModel;
 import com.example.timebankapiproject.service.UserService;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.Unirest;
 import net.minidev.json.JSONObject;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -11,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -32,52 +33,21 @@ public class UserController {
     }
 
     @GetMapping("/user/{user_id}")
-    public ResponseEntity <UserModel> getUserById (@PathVariable("user_id") Integer userId){
+    public ResponseEntity <UserModel> getUserById (@PathVariable("user_id") String userId){
         return userService.getUserById(userId);
     }
 
-    public String getManagementApiToken() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        JSONObject requestBody = new JSONObject();
-        requestBody.put("client_id", "gcpFQMIuEMTPdur0XhbRekUKWLSsLF3K");
-        requestBody.put("client_secret", "RTEExKEXK603fBA11Y4s22IsaBV95PE3YvvK3A6fVwa-_ms16Gp9JHvmjLQiq0dN");
-        requestBody.put("audience", "https://dev-377qri7m.eu.auth0.com/api/v2/");
-        requestBody.put("grant_type", "client_credentials");
-
-        HttpEntity<String> request = new HttpEntity<String>(requestBody.toString(), headers);
-
-        RestTemplate restTemplate = new RestTemplate();
-        HashMap<String, String> result = restTemplate
-                .postForObject("https://dev-377qri7m.eu.auth0.com/oauth/token", request, HashMap.class);
-
-        return result.get("access_token");
-    }
-
-    @PostMapping("/user")
-    public ResponseEntity <String> createUser() {
-        JSONObject request = new JSONObject();
-        request.put("email", "norman.lewis@email.com");
-        request.put("given_name", "Norman");
-        request.put("family_name", "Lewis");
-        request.put("connection", "Username-Password-Authentication");
-        request.put("password", "hej/23vad&och%");
+    @PostMapping("/createUser")
+    public ResponseEntity <String> createUser(@RequestBody UserModel userModel) {
+        ResponseEntity<String> response = userService.createUserInAuth0(userModel);
+        String id = userService.getUserAuth0Id(response);
+        userModel.setId(id);
+        userService.createUserInDatabase(userModel);
+        userService.giveRoleToAuth0User(id,"rol_Osy55j9CI34DLcQF");
 
 
-        //userService.createUser(userModel);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        System.out.println(getManagementApiToken());
-        headers.set("authorization", "Bearer " + getManagementApiToken());
-
-        HttpEntity<String> entity = new HttpEntity<String>(request.toString(), headers);
-
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> result = restTemplate
-                .postForEntity("https://dev-377qri7m.eu.auth0.com/api/v2/users", entity, String.class);
-
-        return result;
+        // set and get Id from auth0
+        return response;
     }
     @PatchMapping("/user/")
     public ResponseEntity <UserModel> updateUser(@RequestBody UserModel userModel) {
@@ -85,12 +55,12 @@ public class UserController {
     }
 
     @DeleteMapping("/user/{user_id}")
-    public ResponseEntity <Integer> deleteUser(@PathVariable("user_id") Integer userId){
+    public ResponseEntity <String> deleteUser(@PathVariable("user_id") String userId){
         return userService.deleteUser(userId);
     }
 
     @GetMapping("/user/{user_id}/requests")
-    public ResponseEntity <List<VacationRequestModel>> getUserVacationRequest(@PathVariable("user_id") Integer userId){
+    public ResponseEntity <List<VacationRequestModel>> getUserVacationRequest(@PathVariable("user_id") String userId){
         return userService.getUserVacationRequestsById(userId);
     }
 }

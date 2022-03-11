@@ -14,15 +14,16 @@ import java.util.List;
 @Table(name = "users")
 public class UserModel {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    public int id;
+    private String id;
     @Column
-    public String name;
+    private String firstName;
     @Column
-    public String email;
+    private String lastName;
+    @Column
+    private String email;
     @OneToMany
-    public List<VacationRequestModel> vacationRequestModels;
+    private List<VacationRequestModel> vacationRequestModels;
     @Column
-    public boolean isAdmin;
+    private boolean isAdmin;
 
 }
