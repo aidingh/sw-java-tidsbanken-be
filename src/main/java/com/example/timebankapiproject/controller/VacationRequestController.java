@@ -20,6 +20,7 @@ public class VacationRequestController {
         return vacationRequestService.getAllVacations();
     }
 
+    @CrossOrigin
     @PostMapping("/vacation")
     public ResponseEntity <VacationRequestModel> createVacationRequest(@RequestBody VacationRequestModel vacationRequestModel){
         return vacationRequestService.createVacationRequest(vacationRequestModel);
