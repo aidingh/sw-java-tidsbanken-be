@@ -4,6 +4,7 @@ import com.example.timebankapiproject.models.UserModel;
 import com.example.timebankapiproject.models.VacationRequestModel;
 import com.example.timebankapiproject.repository.UserRepository;
 import com.example.timebankapiproject.repository.VacationRequestRepository;
+
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
@@ -16,6 +17,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+
 import java.util.List;
 import java.util.Optional;
 
@@ -23,10 +31,12 @@ import java.util.Optional;
 public class UserService {
 
 
+
     private final String clientId = "gcpFQMIuEMTPdur0XhbRekUKWLSsLF3K";
     private final String clientSecret = "RTEExKEXK603fBA11Y4s22IsaBV95PE3YvvK3A6fVwa-_ms16Gp9JHvmjLQiq0dN";
     private final String managementApiAudience = "https://dev-377qri7m.eu.auth0.com/api/v2/";
     private final String roleIdAdmin = "rol_Osy55j9CI34DLcQF";
+
 
     @Autowired
     private UserRepository userRepository;
@@ -41,6 +51,7 @@ public class UserService {
         else
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
 
     public ResponseEntity <UserModel> getUserById(String userId){
 
