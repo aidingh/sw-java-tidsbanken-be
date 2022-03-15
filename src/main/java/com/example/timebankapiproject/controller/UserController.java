@@ -58,4 +58,10 @@ public class UserController {
     public ResponseEntity <List<VacationRequestModel>> getUserVacationRequest(@PathVariable("user_id") String userId){
         return userService.getUserVacationRequestsById(userId);
     }
+
+    @GetMapping("/user/role/{user_id}")
+    public ResponseEntity<String> getUserRoleById(@PathVariable("user_id") String userId){
+        String userRole = userService.getUserRole(userId);
+        return ResponseEntity.ok().body(userRole);
+    }
 }
