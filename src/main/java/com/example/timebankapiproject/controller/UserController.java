@@ -54,11 +54,13 @@ public class UserController {
         return userService.deleteUser(userId);
     }
 
+    @CrossOrigin
     @GetMapping("/user/{user_id}/requests")
     public ResponseEntity <List<VacationRequestModel>> getUserVacationRequest(@PathVariable("user_id") String userId){
         return userService.getUserVacationRequestsById(userId);
     }
 
+    @CrossOrigin
     @GetMapping("/user/role/{user_id}")
     public ResponseEntity<String> getUserRoleById(@PathVariable("user_id") String userId){
         String userRole = userService.getUserRole(userId);
