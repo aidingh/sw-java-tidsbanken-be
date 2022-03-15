@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.Date;
 
 @NoArgsConstructor
@@ -21,8 +22,8 @@ public class VacationRequestModel {
     @Column
     private VacationRequestStatus status;
     @Column
-    private Date startPeriod;
+    private LocalDate startPeriod;
     @Column
-    private Date endPeriod;
+    private LocalDate endPeriod;
 }
 
