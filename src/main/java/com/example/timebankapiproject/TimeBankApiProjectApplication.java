@@ -20,11 +20,11 @@ public class TimeBankApiProjectApplication {
     public static void main(String[] args) {
         SpringApplication.run(TimeBankApiProjectApplication.class, args);
     }
-
+ /*
     @Bean
     CommandLineRunner runner(UserRepository repo, VacationRequestRepository vacRepo) {
         return args -> {
-      /*      UserModel user = new UserModel();
+         UserModel user = new UserModel();
             user.setAdmin(true);
             user.setEmail("användare.hej@gmail.com");
 
@@ -48,7 +48,7 @@ public class TimeBankApiProjectApplication {
             vacRepo.save(vacReq1);
 
             user.setVacationRequestModels(listOfRequests);
-            repo.save(user);*/
+            repo.save(user);
         };
-    }
+    }*/
 }

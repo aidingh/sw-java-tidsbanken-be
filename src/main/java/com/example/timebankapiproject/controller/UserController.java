@@ -2,6 +2,7 @@ package com.example.timebankapiproject.controller;
 
 import com.example.timebankapiproject.models.UserModel;
 import com.example.timebankapiproject.models.VacationRequestModel;
+import com.example.timebankapiproject.service.Auth0Service;
 import com.example.timebankapiproject.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,9 +15,11 @@ public class UserController {
 
 
     private final UserService userService;
+    private final Auth0Service auth0Service;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, Auth0Service auth0Service) {
         this.userService = userService;
+        this.auth0Service = auth0Service;
     }
 
     @CrossOrigin
@@ -32,26 +35,36 @@ public class UserController {
 
     @PostMapping("/createUser")
     public ResponseEntity <String> createUser(@RequestBody UserModel userModel) {
-        ResponseEntity<String> createdUser = userService.createUserInAuth0(userModel);
-        String id = userService.getUserIdFromAuth0(createdUser);
+        ResponseEntity<String> createdUser = auth0Service.createUserInAuth0(userModel);
+        String id = auth0Service.getUserIdFromAuth0(createdUser);
 
         userModel.setId(id);
         userService.createUserInDatabase(userModel);
 
         if(userModel.isAdmin())
-            userService.giveRoleToAuth0User(id,"rol_Osy55j9CI34DLcQF");
+            auth0Service.giveRoleToAuth0User(id,"rol_Osy55j9CI34DLcQF");
 
         return createdUser;
     }
 
-    @PatchMapping("/user/")
-    public ResponseEntity <UserModel> updateUser(@RequestBody UserModel userModel) {
-        return userService.updateUser(userModel);
+    @PatchMapping("/updateUser")
+    public ResponseEntity <String> updateUser(@RequestBody UserModel userModel) {
+        ResponseEntity<String> updatedUser = null;
+
+            if(userService.updateUser(userModel))
+                updatedUser = auth0Service.updateUserInAuth0(userModel);
+
+        return updatedUser;
     }
 
     @DeleteMapping("/user/{user_id}")
     public ResponseEntity <String> deleteUser(@PathVariable("user_id") String userId){
-        return userService.deleteUser(userId);
+        ResponseEntity<String> deletedUser = null;
+
+            if(userService.deleteUser(userId))
+                deletedUser = auth0Service.deleteUserInAuth0(userId);
+
+        return deletedUser;
     }
 
     @GetMapping("/user/{user_id}/requests")
