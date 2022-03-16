@@ -52,8 +52,6 @@ public class UserService {
             return user;
     }
 
-
-
     public boolean updateUser(UserModel userModel){
 
         Optional<UserModel> userData = userRepository.findById(userModel.getId());
@@ -65,7 +63,6 @@ public class UserService {
         } else
             return false;
     }
-
 
     public boolean deleteUser(String userId){
        if(userRepository.existsById(userId)){

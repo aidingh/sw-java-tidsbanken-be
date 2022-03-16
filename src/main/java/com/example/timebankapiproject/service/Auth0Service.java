@@ -2,6 +2,7 @@ package com.example.timebankapiproject.service;
 
 import com.example.timebankapiproject.models.UserModel;
 import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import org.json.JSONArray;
@@ -136,5 +137,19 @@ public class Auth0Service {
         System.out.println("body " + roleResponse.getBody());
 
     }
+
+    public String getUserRole(String id){
+        HttpResponse<JsonNode> response = null;
+
+        try {
+            response = Unirest.get(managementApiAudience + "users/auth0|" + id + "/roles")
+                    .header("authorization", "Bearer " + getManagementApiToken())
+                    .asJson();
+        } catch (UnirestException e) {
+            e.printStackTrace();
+        }
+        return response.getBody().toString();
+    }
+
 
 }

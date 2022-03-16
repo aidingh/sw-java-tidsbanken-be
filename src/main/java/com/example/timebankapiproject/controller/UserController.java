@@ -4,6 +4,7 @@ import com.example.timebankapiproject.models.UserModel;
 import com.example.timebankapiproject.models.VacationRequestModel;
 import com.example.timebankapiproject.service.Auth0Service;
 import com.example.timebankapiproject.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +18,7 @@ public class UserController {
     private final UserService userService;
     private final Auth0Service auth0Service;
 
+    @Autowired
     public UserController(UserService userService, Auth0Service auth0Service) {
         this.userService = userService;
         this.auth0Service = auth0Service;
@@ -67,8 +69,16 @@ public class UserController {
         return deletedUser;
     }
 
+    @CrossOrigin
     @GetMapping("/user/{user_id}/requests")
     public ResponseEntity <List<VacationRequestModel>> getUserVacationRequest(@PathVariable("user_id") String userId){
         return userService.getUserVacationRequestsById(userId);
+    }
+
+    @CrossOrigin
+    @GetMapping("/user/role/{user_id}")
+    public ResponseEntity<String> getUserRoleById(@PathVariable("user_id") String userId){
+        String userRole = auth0Service.getUserRole(userId);
+        return ResponseEntity.ok().body(userRole);
     }
 }

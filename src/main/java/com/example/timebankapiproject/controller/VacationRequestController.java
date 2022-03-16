@@ -15,6 +15,7 @@ public class VacationRequestController {
         this.vacationRequestService = vacationRequestService;
     }
 
+    @CrossOrigin
     @GetMapping("/vacation")
     public ResponseEntity <List<VacationRequestModel>> getVacations(){
         return vacationRequestService.getAllVacations();
