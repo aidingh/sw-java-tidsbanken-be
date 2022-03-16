@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("api/v1/vacation")
 public class VacationRequestController {
     private final VacationRequestService vacationRequestService;
 
@@ -16,14 +17,28 @@ public class VacationRequestController {
     }
 
     @CrossOrigin
-    @GetMapping("/vacation")
+    @GetMapping("/all")
     public ResponseEntity <List<VacationRequestModel>> getVacations(){
         return vacationRequestService.getAllVacations();
     }
 
     @CrossOrigin
-    @PostMapping("/vacation")
+    @PostMapping("/create")
     public ResponseEntity <VacationRequestModel> createVacationRequest(@RequestBody VacationRequestModel vacationRequestModel){
         return vacationRequestService.createVacationRequest(vacationRequestModel);
+    }
+
+    @CrossOrigin
+    @GetMapping("/approved")
+    public ResponseEntity <List<VacationRequestModel>> getApprovedVacationRequests(){
+        return vacationRequestService.getAllApprovedVacations();
+    }
+
+    @CrossOrigin
+    @GetMapping("/{user_id}")
+    public ResponseEntity<List<VacationRequestModel>> getUserVacationRequests(@PathVariable("user_id")String id){
+        List<VacationRequestModel> userVacations = vacationRequestService.getVacationRequestsByUserId(id);
+
+        return ResponseEntity.ok().body(userVacations);
     }
 }
