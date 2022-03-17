@@ -65,6 +65,10 @@ public class UserModel {
         this.vacationRequestModels = vacationRequestModels;
     }
 
+    public void setVacationRequest(VacationRequestModel vacationRequest){
+        this.vacationRequestModels.add(vacationRequest);
+    }
+
     public boolean isAdmin() {
         return isAdmin;
     }

@@ -32,11 +32,21 @@ public class VacationRequestService {
         }
     }
 
-    public ResponseEntity <VacationRequestModel> createVacationRequest(VacationRequestModel vacationRequestModel){
-        VacationRequestModel vacationRequest;
+    public ResponseEntity <VacationRequestModel> createVacationRequest(VacationRequestModel vacationRequestModel,String id){
+        VacationRequestModel vacationRequest = null;
+
         if(vacationRequestModel != null){
-            vacationRequestModel.setStatus(VacationRequestStatus.PENDING);
-            vacationRequest = vacationRequestRepository.save(vacationRequestModel);
+            Optional<UserModel> userOptional = userRepository.findById(id);
+            UserModel user;
+
+            if(userOptional.isPresent()){
+                vacationRequest = vacationRequestRepository.save(vacationRequestModel);
+
+                user = userRepository.findById(id).get();
+                user.setVacationRequest(vacationRequest);
+                userRepository.save(user);
+            }
+
             return new ResponseEntity<>(vacationRequest, HttpStatus.CREATED);
         }else{
             return new ResponseEntity<>(null,HttpStatus.INTERNAL_SERVER_ERROR);

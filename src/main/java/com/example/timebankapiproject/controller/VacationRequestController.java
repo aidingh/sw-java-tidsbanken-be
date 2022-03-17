@@ -23,9 +23,12 @@ public class VacationRequestController {
     }
 
     @CrossOrigin
-    @PostMapping("/create")
-    public ResponseEntity <VacationRequestModel> createVacationRequest(@RequestBody VacationRequestModel vacationRequestModel){
-        return vacationRequestService.createVacationRequest(vacationRequestModel);
+    @PostMapping("/{user_Id}/create")
+    public ResponseEntity <VacationRequestModel> createVacationRequest(
+            @RequestBody VacationRequestModel vacationRequestModel,
+            @PathVariable("user_Id") String id
+    ){
+        return vacationRequestService.createVacationRequest(vacationRequestModel,id);
     }
 
     @CrossOrigin
