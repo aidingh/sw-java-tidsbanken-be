@@ -23,6 +23,19 @@ public class VacationRequestController {
     }
 
     @CrossOrigin
+    @GetMapping("/id/{vacation_id}")
+    public ResponseEntity <VacationRequestModel> getVacationRequestById (@PathVariable ("vacation_id") int vacationRequestId){
+        return vacationRequestService.getVacationById(vacationRequestId);
+    }
+
+    @CrossOrigin
+    @DeleteMapping("/{vacation_id}")
+    public ResponseEntity<?> deleteAVacationRequest(@PathVariable ("vacation_id") int vacationRequestId){
+        return vacationRequestService.deleteVacationRequest(vacationRequestId);
+    }
+
+
+    @CrossOrigin
     @PostMapping("/{user_Id}/create")
     public ResponseEntity <VacationRequestModel> createVacationRequest(
             @RequestBody VacationRequestModel vacationRequestModel,
