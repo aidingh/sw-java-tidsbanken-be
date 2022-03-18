@@ -5,6 +5,7 @@ import com.example.timebankapiproject.models.VacationRequestModel;
 import com.example.timebankapiproject.service.Auth0Service;
 import com.example.timebankapiproject.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,8 +38,11 @@ public class UserController {
 
     @CrossOrigin
     @PostMapping("/createUser")
-    public ResponseEntity <String> createUser(@RequestBody UserModel userModel) {
+    public ResponseEntity <String> createUser(@RequestBody UserModel userModel) throws Exception{
         ResponseEntity<String> createdUser = auth0Service.createUserInAuth0(userModel);
+        if(createdUser.getStatusCode() == HttpStatus.CONFLICT){
+            return createdUser;
+        }
         String id = auth0Service.getUserIdFromAuth0(createdUser);
 
         userModel.setId(id);

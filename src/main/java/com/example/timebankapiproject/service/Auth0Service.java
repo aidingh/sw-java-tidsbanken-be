@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import java.util.HashMap;
 
@@ -23,7 +24,7 @@ public class Auth0Service {
     private final String roleIdAdmin = "rol_Osy55j9CI34DLcQF";
 
 
-    public ResponseEntity<String> createUserInAuth0(UserModel user){
+    public ResponseEntity<String> createUserInAuth0(UserModel user) throws Exception{
         JSONObject request = new JSONObject();
         request.put("email", user.getEmail());
         request.put("given_name", user.getFirstName());
@@ -38,9 +39,19 @@ public class Auth0Service {
 
         HttpEntity<String> entity = new HttpEntity<String>(request.toString(), headers);
 
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> result = restTemplate
-                .postForEntity("https://dev-377qri7m.eu.auth0.com/api/v2/users", entity, String.class);
+        ResponseEntity<String> result = null;
+
+        try{
+            RestTemplate restTemplate = new RestTemplate();
+            result = restTemplate.postForEntity("https://dev-377qri7m.eu.auth0.com/api/v2/users", entity, String.class);
+            return result;
+        }
+        catch(HttpStatusCodeException e){
+            if(e.getStatusCode() == HttpStatus.CONFLICT)
+            {
+                return new ResponseEntity<>("User already exists.",HttpStatus.CONFLICT);
+            }
+        }
         return result;
     }
     // TODO what should we update in AUTH0? we are just updating email/name atm.
