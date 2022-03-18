@@ -35,6 +35,7 @@ public class UserController {
         return userService.getUserById(userId);
     }
 
+    @CrossOrigin
     @PostMapping("/createUser")
     public ResponseEntity <String> createUser(@RequestBody UserModel userModel) {
         ResponseEntity<String> createdUser = auth0Service.createUserInAuth0(userModel);
@@ -45,7 +46,9 @@ public class UserController {
 
         if(userModel.isAdmin())
             auth0Service.giveRoleToAuth0User(id,"rol_Osy55j9CI34DLcQF");
-
+        else{
+            auth0Service.giveRoleToAuth0User(id,"rol_XuhdanLYToSuvKig");
+        }
         return createdUser;
     }
 
