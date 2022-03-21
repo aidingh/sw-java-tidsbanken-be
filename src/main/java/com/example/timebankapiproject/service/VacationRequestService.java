@@ -31,6 +31,7 @@ public class VacationRequestService {
         if(userRepository.existsById(id)){
             UserModel user = userRepository.findById(id).orElse(null);
             vacationRequestModel.setUserModel(userRepository.findById(id).orElse(null));
+            vacationRequestModel.setStatus(VacationRequestStatus.PENDING);
             VacationRequestModel vacationRequest =  vacationRequestRepository.save(vacationRequestModel);
 
             if (user != null) {
@@ -43,6 +44,8 @@ public class VacationRequestService {
 
         return null;
     }
+
+    //TODO Mer DTOS borde fixas
 
     public ResponseEntity <List<VacationRequestModel>> getAllApprovedVacations() {
         List<VacationRequestModel> vacations = vacationRequestRepository.findAll();
