@@ -44,6 +44,7 @@ public class VacationRequestController {
         return new ResponseEntity<>(vacationRequestDTOResponse, HttpStatus.CREATED);
     }
 
+    //TODO Mer DTOS borde fixas
     @CrossOrigin
     @GetMapping("/approved")
     public ResponseEntity <List<VacationRequestModel>> getApprovedVacationRequests(){
@@ -57,9 +58,9 @@ public class VacationRequestController {
 
         return ResponseEntity.ok().body(userVacations);
     }
-    /*
+
     @DeleteMapping("/{vacationRequest_id}/delete")
     public ResponseEntity<VacationRequestModel> deleteVacationRequest(@PathVariable("vacationRequest_id") Integer id){
         return  vacationRequestService.deleteVacationRequestById(id);
-    } */
+    }
 }
