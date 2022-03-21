@@ -1,17 +1,27 @@
 package com.example.timebankapiproject.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import java.util.List;
 
+@AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name = "users")
 public class UserModel {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
     @Column
     private String firstName;
@@ -19,12 +29,31 @@ public class UserModel {
     private String lastName;
     @Column
     private String email;
-    @OneToMany
-    private List<VacationRequestModel> vacationRequestModels;
+
+    //@OneToMany(mappedBy = "userModel", cascade = CascadeType.ALL)
+
+    @Nullable
+    @JsonManagedReference
+    @OneToMany(mappedBy = "userModel", cascade = CascadeType.ALL)
+    public List<VacationRequestModel> vacationRequestModels;
 
     @Column
     public boolean isAdmin;
 
+    public void setVacationRequestModel(VacationRequestModel vacationRequest){
+        this.vacationRequestModels.add(vacationRequest);
+    }
+
+    public List<VacationRequestModel> getVacationRequestModels() {
+        return vacationRequestModels;
+    }
+
+    public void setVacationRequestModels(List<VacationRequestModel> vacationRequestModels) {
+        this.vacationRequestModels = vacationRequestModels;
+    }
+
+
+/*
     public String getId() {
         return id;
     }
@@ -65,9 +94,7 @@ public class UserModel {
         this.vacationRequestModels = vacationRequestModels;
     }
 
-    public void setVacationRequest(VacationRequestModel vacationRequest){
-        this.vacationRequestModels.add(vacationRequest);
-    }
+
 
     public boolean isAdmin() {
         return isAdmin;
@@ -76,4 +103,6 @@ public class UserModel {
     public void setAdmin(boolean admin) {
         isAdmin = admin;
     }
+*/
+
 }

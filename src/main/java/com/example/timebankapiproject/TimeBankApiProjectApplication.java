@@ -5,6 +5,7 @@ import com.example.timebankapiproject.models.UserModel;
 import com.example.timebankapiproject.models.VacationRequestModel;
 import com.example.timebankapiproject.repository.UserRepository;
 import com.example.timebankapiproject.repository.VacationRequestRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -18,10 +19,16 @@ import java.util.List;
 @SpringBootApplication
 public class TimeBankApiProjectApplication {
 
+    @Bean
+    public ModelMapper modelMapper() {
+        return new ModelMapper();
+    }
+
+
     public static void main(String[] args) {
         SpringApplication.run(TimeBankApiProjectApplication.class, args);
     }
-
+/*
     @Bean
     CommandLineRunner runner(UserRepository repo, VacationRequestRepository vacRepo) {
         return args -> {
@@ -70,6 +77,6 @@ public class TimeBankApiProjectApplication {
             repo.save(user);
         };
     }
-
+*/
 
 }

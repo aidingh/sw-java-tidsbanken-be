@@ -22,15 +22,6 @@ public class VacationRequestService {
     @Autowired
     private UserRepository userRepository;
 
-    public ResponseEntity<List<VacationRequestModel>> getAllVacations() {
-        List<VacationRequestModel> vacations = vacationRequestRepository.findAll();
-        if (!vacations.isEmpty()) {
-            return new ResponseEntity<>(vacations, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-    }
-
     public ResponseEntity<VacationRequestModel> getVacationById(int vacationRequestId) {
         VacationRequestModel vacationRequestModel;
 
@@ -40,30 +31,32 @@ public class VacationRequestService {
         } else
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+    public List<VacationRequestModel> getAllVacations () {
+        return vacationRequestRepository.findAll();
+    }
 
-    public ResponseEntity<VacationRequestModel> createVacationRequest(VacationRequestModel vacationRequestModel, String id) {
-        VacationRequestModel vacationRequest = null;
 
-        if (vacationRequestModel != null) {
-            Optional<UserModel> userOptional = userRepository.findById(id);
-            UserModel user;
+    public VacationRequestModel createVacationRequest(VacationRequestModel vacationRequestModel, String id){
+        if(userRepository.existsById(id)){
+            UserModel user = userRepository.findById(id).orElse(null);
+            vacationRequestModel.setUserModel(userRepository.findById(id).orElse(null));
+            vacationRequestModel.setStatus(VacationRequestStatus.PENDING);
+            VacationRequestModel vacationRequest =  vacationRequestRepository.save(vacationRequestModel);
 
-            if (userOptional.isPresent()) {
-                vacationRequestModel.setStatus(VacationRequestStatus.PENDING);
-                vacationRequest = vacationRequestRepository.save(vacationRequestModel);
-
-                user = userRepository.findById(id).get();
-                user.setVacationRequest(vacationRequest);
+            if (user != null) {
+                user.setVacationRequestModel(vacationRequestModel);
                 userRepository.save(user);
             }
 
-            return new ResponseEntity<>(vacationRequest, HttpStatus.CREATED);
-        } else {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return vacationRequest;
         }
+
+        return null;
     }
 
-    public ResponseEntity<List<VacationRequestModel>> getAllApprovedVacations() {
+    //TODO Mer DTOS borde fixas
+
+    public ResponseEntity <List<VacationRequestModel>> getAllApprovedVacations() {
         List<VacationRequestModel> vacations = vacationRequestRepository.findAll();
 
         List<VacationRequestModel> approvedVacations = vacations.stream().filter(element ->
