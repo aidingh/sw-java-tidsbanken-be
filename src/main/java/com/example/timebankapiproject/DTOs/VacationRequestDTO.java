@@ -20,5 +20,14 @@ public class VacationRequestDTO {
     private LocalDate endPeriod;
 
     private UserModel userModel;
-    
+
+    @JsonGetter("userModel")
+    public String convertUserModelToStringURI(){
+        if(userModel != null) {
+            return "/api/v1/user/" + userModel.getId();
+        }else{
+            return null;
+        }
+    }
+
 }
