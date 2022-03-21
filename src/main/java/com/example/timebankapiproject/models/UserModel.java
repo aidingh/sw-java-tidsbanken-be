@@ -1,5 +1,7 @@
 package com.example.timebankapiproject.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,7 +31,9 @@ public class UserModel {
     private String email;
 
     //@OneToMany(mappedBy = "userModel", cascade = CascadeType.ALL)
+
     @Nullable
+    @JsonManagedReference
     @OneToMany(mappedBy = "userModel", cascade = CascadeType.ALL)
     public List<VacationRequestModel> vacationRequestModels;
 

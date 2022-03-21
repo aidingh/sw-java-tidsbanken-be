@@ -27,7 +27,7 @@ public class VacationRequestController {
     public ResponseEntity <VacationRequestModel> createVacationRequest(
             @RequestBody VacationRequestModel vacationRequestModel,
             @PathVariable String user_id){
-        return vacationRequestService.createVacationRequest(vacationRequestModel,user_id);
+        return vacationRequestService.createVacationRequestTest(vacationRequestModel,user_id);
     }
 
     @CrossOrigin

@@ -1,6 +1,7 @@
 package com.example.timebankapiproject.models;
 
 import com.example.timebankapiproject.enums.VacationRequestStatus;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,6 +33,8 @@ public class VacationRequestModel {
     private LocalDate startPeriod;
     @Column
     private LocalDate endPeriod;
+
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name="user_id", nullable = false)
     private UserModel userModel;

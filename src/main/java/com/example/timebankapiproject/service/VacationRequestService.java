@@ -56,9 +56,21 @@ public class VacationRequestService {
                                                                            String id){
 
         if(userRepository.existsById(id)){
-            vacationRequestRepository.save(vacationRequestModel);
+            UserModel user = userRepository.findById(id).get();
+            System.out.println(user.getFirstName());
+            System.out.println(vacationRequestModel.getTitle());
+            vacationRequestModel.setUserModel(userRepository.findById(id).get());
+            VacationRequestModel model =  vacationRequestRepository.save(vacationRequestModel);
+            System.out.println("after save vacay");
+
+            user.setVacationRequestModel(vacationRequestModel);
+
+            userRepository.save(user);
+
+            return ResponseEntity.ok().body(vacationRequestModel);
         }
 
+        return null;
     }
 
     public ResponseEntity <List<VacationRequestModel>> getAllApprovedVacations() {
