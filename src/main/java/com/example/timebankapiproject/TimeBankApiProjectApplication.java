@@ -21,7 +21,7 @@ public class TimeBankApiProjectApplication {
     public static void main(String[] args) {
         SpringApplication.run(TimeBankApiProjectApplication.class, args);
     }
-
+/*
     @Bean
     CommandLineRunner runner(UserRepository repo, VacationRequestRepository vacRepo) {
         return args -> {
@@ -70,6 +70,6 @@ public class TimeBankApiProjectApplication {
             repo.save(user);
         };
     }
-
+*/
 
 }

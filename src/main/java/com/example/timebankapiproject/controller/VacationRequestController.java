@@ -23,12 +23,11 @@ public class VacationRequestController {
     }
 
     @CrossOrigin
-    @PostMapping("/{user_Id}/create")
+    @PostMapping("/{user_id}/create")
     public ResponseEntity <VacationRequestModel> createVacationRequest(
             @RequestBody VacationRequestModel vacationRequestModel,
-            @PathVariable("user_Id") String id
-    ){
-        return vacationRequestService.createVacationRequest(vacationRequestModel,id);
+            @PathVariable String user_id){
+        return vacationRequestService.createVacationRequest(vacationRequestModel,user_id);
     }
 
     @CrossOrigin
@@ -44,4 +43,9 @@ public class VacationRequestController {
 
         return ResponseEntity.ok().body(userVacations);
     }
+    /*
+    @DeleteMapping("/{vacationRequest_id}/delete")
+    public ResponseEntity<VacationRequestModel> deleteVacationRequest(@PathVariable("vacationRequest_id") Integer id){
+        return  vacationRequestService.deleteVacationRequestById(id);
+    } */
 }
