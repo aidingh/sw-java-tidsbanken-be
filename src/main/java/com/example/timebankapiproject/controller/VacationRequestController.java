@@ -1,15 +1,24 @@
 package com.example.timebankapiproject.controller;
 
+import com.example.timebankapiproject.DTOs.VacationRequestDTO;
 import com.example.timebankapiproject.models.VacationRequestModel;
 import com.example.timebankapiproject.service.VacationRequestService;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("api/v1/vacation")
 public class VacationRequestController {
+
+    @Autowired
+    private ModelMapper modelMapper;
+
     private final VacationRequestService vacationRequestService;
 
     public VacationRequestController(VacationRequestService vacationRequestService) {
@@ -17,17 +26,22 @@ public class VacationRequestController {
     }
 
     @CrossOrigin
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/all")
-    public ResponseEntity <List<VacationRequestModel>> getVacations(){
-        return vacationRequestService.getAllVacations();
+    public List<VacationRequestDTO> getVacations(){
+        return vacationRequestService.getAllVacations().stream().map(vacationRequest -> modelMapper.map(vacationRequest, VacationRequestDTO.class)).collect(Collectors.toList());
     }
 
     @CrossOrigin
     @PostMapping("/{user_id}/create")
-    public ResponseEntity <VacationRequestModel> createVacationRequest(
-            @RequestBody VacationRequestModel vacationRequestModel,
+    public ResponseEntity <VacationRequestDTO> createVacationRequest(
+            @RequestBody VacationRequestDTO VacationRequestDTO,
             @PathVariable String user_id){
-        return vacationRequestService.createVacationRequestTest(vacationRequestModel,user_id);
+
+        VacationRequestModel VacationRequest = modelMapper.map(VacationRequestDTO, VacationRequestModel.class);
+        VacationRequestModel vacation = vacationRequestService.createVacationRequest(VacationRequest,user_id);
+        VacationRequestDTO vacationRequestDTOResponse = modelMapper.map(vacation,VacationRequestDTO.class);
+        return new ResponseEntity<>(vacationRequestDTOResponse, HttpStatus.CREATED);
     }
 
     @CrossOrigin
