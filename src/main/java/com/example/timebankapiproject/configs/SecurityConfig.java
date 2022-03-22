@@ -19,12 +19,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}")
     private  String issuer;
 
+    private static final String[] AUTH_WHITELIST = {
+            "/v3/api-docs/**",
+            "/swagger-ui/**"
+            // other public endpoints of your API may be appended to this array
+    };
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         //http.csrf().disable().authorizeRequests().anyRequest().permitAll();
 
-        http.authorizeRequests()
-                .anyRequest().authenticated()
+        http.authorizeRequests().antMatchers(AUTH_WHITELIST).permitAll()
+                .antMatchers("/**").authenticated()
                 .and().cors()
                 .and().oauth2ResourceServer().jwt();
     }
