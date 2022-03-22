@@ -45,6 +45,7 @@ public class VacationRequestController {
         vacationRequestService.deleteVacationRequest(vacationRequestId);
     }
 
+    @CrossOrigin
     @PostMapping("/{user_id}/create")
     public ResponseEntity<VacationRequestPostDTO> createVacationRequest(
             @RequestBody VacationRequestPostDTO vacationRequestPostDTO,
