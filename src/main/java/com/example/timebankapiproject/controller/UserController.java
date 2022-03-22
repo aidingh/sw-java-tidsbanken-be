@@ -56,6 +56,7 @@ public class UserController {
         return createdUser;
     }
 
+    @CrossOrigin
     @PatchMapping("/updateUserAuth0")
     public ResponseEntity <String> updateUserAuth0(@RequestBody Auth0User userModel) {
         ResponseEntity<String> updatedUser = auth0Service.updateUserInAuth0(userModel);
@@ -96,6 +97,7 @@ public class UserController {
         return ResponseEntity.ok().body(userRole);
     }
 
+    @CrossOrigin
     @GetMapping("/user/changePassword/{email}")
     public boolean changeUserPassword(@PathVariable("email") String email){
 
