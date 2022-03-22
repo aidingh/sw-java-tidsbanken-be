@@ -1,5 +1,6 @@
 package com.example.timebankapiproject.service;
 
+import com.example.timebankapiproject.models.Auth0User;
 import com.example.timebankapiproject.models.UserModel;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
@@ -10,6 +11,7 @@ import org.json.JSONObject;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import java.util.HashMap;
 
@@ -22,8 +24,23 @@ public class Auth0Service {
     private final String managementApiAudience = "https://dev-377qri7m.eu.auth0.com/api/v2/";
     private final String roleIdAdmin = "rol_Osy55j9CI34DLcQF";
 
+    public void changeUserPassword(String email){
+        JSONObject request = new JSONObject();
+        request.put("client_id", this.clientId);
+        request.put("email", email);
+        request.put("connection", "Username-Password-Authentication");
 
-    public ResponseEntity<String> createUserInAuth0(UserModel user){
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<String> entity = new HttpEntity<>(request.toString(), headers);
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        restTemplate.postForEntity("https://dev-377qri7m.eu.auth0.com/dbconnections/change_password", entity, String.class);
+    }
+
+    public ResponseEntity<String> createUserInAuth0(UserModel user) throws Exception{
         JSONObject request = new JSONObject();
         request.put("email", user.getEmail());
         request.put("given_name", user.getFirstName());
@@ -38,20 +55,30 @@ public class Auth0Service {
 
         HttpEntity<String> entity = new HttpEntity<String>(request.toString(), headers);
 
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> result = restTemplate
-                .postForEntity("https://dev-377qri7m.eu.auth0.com/api/v2/users", entity, String.class);
+        ResponseEntity<String> result = null;
+
+        try{
+            RestTemplate restTemplate = new RestTemplate();
+            result = restTemplate.postForEntity("https://dev-377qri7m.eu.auth0.com/api/v2/users", entity, String.class);
+            return result;
+        }
+        catch(HttpStatusCodeException e){
+            if(e.getStatusCode() == HttpStatus.CONFLICT)
+            {
+                return new ResponseEntity<>("User already exists.",HttpStatus.CONFLICT);
+            }
+        }
         return result;
     }
     // TODO what should we update in AUTH0? we are just updating email/name atm.
-    public ResponseEntity<String> updateUserInAuth0(UserModel user){
+    public ResponseEntity<String> updateUserInAuth0(Auth0User user){
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("authorization", "Bearer " + getManagementApiToken());
 
         JSONObject request = new JSONObject();
         request.put("email", user.getEmail());
-        request.put("name", user.getEmail());
+        request.put("nickname",user.getNickname());
         request.put("connection", "Username-Password-Authentication");
 
         HttpEntity<String> entity = new HttpEntity<>(request.toString(), headers);
@@ -63,7 +90,7 @@ public class Auth0Service {
 
         ResponseEntity<String> result = restTemplate
                 .exchange(url,HttpMethod.PATCH, entity, String.class);
-
+        System.out.println(result.getBody() + "heeej");
         return result;
     }
 
