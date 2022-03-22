@@ -24,32 +24,20 @@ public class Auth0Service {
     private final String managementApiAudience = "https://dev-377qri7m.eu.auth0.com/api/v2/";
     private final String roleIdAdmin = "rol_Osy55j9CI34DLcQF";
 
-    public ResponseEntity<String> change(String mail) throws Exception{
+    public void changeUserPassword(String email){
         JSONObject request = new JSONObject();
-        request.put("client_id", clientId);
-        request.put("email", mail);
+        request.put("client_id", this.clientId);
+        request.put("email", email);
         request.put("connection", "Username-Password-Authentication");
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("authorization", "Bearer " + getManagementApiToken());
 
-        HttpEntity<String> entity = new HttpEntity<String>(null, headers);
+        HttpEntity<String> entity = new HttpEntity<>(request.toString(), headers);
 
-        ResponseEntity<String> result = null;
+        RestTemplate restTemplate = new RestTemplate();
 
-        try{
-            RestTemplate restTemplate = new RestTemplate();
-            result = restTemplate.postForEntity("https://dev-377qri7m.eu.auth0.com/dbconnections/change_password", entity, String.class);
-            return result;
-        }
-        catch(HttpStatusCodeException e){
-            if(e.getStatusCode() == HttpStatus.CONFLICT)
-            {
-                return new ResponseEntity<>("User already exists.",HttpStatus.CONFLICT);
-            }
-        }
-        return result;
+        restTemplate.postForEntity("https://dev-377qri7m.eu.auth0.com/dbconnections/change_password", entity, String.class);
     }
 
     public ResponseEntity<String> createUserInAuth0(UserModel user) throws Exception{
