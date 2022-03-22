@@ -6,6 +6,7 @@ import com.example.timebankapiproject.models.VacationRequestModel;
 import com.example.timebankapiproject.repository.UserRepository;
 import com.example.timebankapiproject.repository.VacationRequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -80,12 +81,8 @@ public class VacationRequestService {
         return null;
     }
 
-    public ResponseEntity<?> deleteVacationRequest(int vacationRequestId) {
-        if(vacationRequestRepository.existsById(vacationRequestId)){
-            vacationRequestRepository.deleteById(vacationRequestId);
-            return new ResponseEntity<>(true, HttpStatus.NO_CONTENT);
-        }else{
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public void deleteVacationRequest(int vacationRequestId) {
+        VacationRequestModel vacationRequestModel = vacationRequestRepository.findById(vacationRequestId).orElseThrow(() -> new ResourceNotFoundException("VacationRequestModel"));
+        vacationRequestRepository.delete(vacationRequestModel);
     }
 }
