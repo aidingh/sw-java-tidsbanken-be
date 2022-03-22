@@ -1,17 +1,16 @@
 package com.example.timebankapiproject.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -37,6 +36,14 @@ public class UserModel {
     @OneToMany(mappedBy = "userModel", cascade = CascadeType.ALL)
     public List<VacationRequestModel> vacationRequestModels;
 
+    @JsonGetter("vacationRequestModels")
+    public List<String> convertUserModelToStringURI(){
+        if (vacationRequestModels != null) {
+            return vacationRequestModels.stream().map(vacation -> String.format("/api/v1/vacation/id/%d", vacation.getId())).collect(Collectors.toList());
+        }
+        return null;
+    }
+
     @Column
     public boolean isAdmin;
 
@@ -47,62 +54,5 @@ public class UserModel {
     public List<VacationRequestModel> getVacationRequestModels() {
         return vacationRequestModels;
     }
-
-    public void setVacationRequestModels(List<VacationRequestModel> vacationRequestModels) {
-        this.vacationRequestModels = vacationRequestModels;
-    }
-
-
-/*
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public List<VacationRequestModel> getVacationRequestModels() {
-        return vacationRequestModels;
-    }
-
-    public void setVacationRequestModels(List<VacationRequestModel> vacationRequestModels) {
-        this.vacationRequestModels = vacationRequestModels;
-    }
-
-
-
-    public boolean isAdmin() {
-        return isAdmin;
-    }
-
-    public void setAdmin(boolean admin) {
-        isAdmin = admin;
-    }
-*/
 
 }
