@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 @Table(name = "users")
 public class UserModel {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
     @Column
     private String firstName;
@@ -48,7 +47,9 @@ public class UserModel {
     public boolean isAdmin;
 
     public void setVacationRequestModel(VacationRequestModel vacationRequest){
-        this.vacationRequestModels.add(vacationRequest);
+        if (this.vacationRequestModels != null) {
+            this.vacationRequestModels.add(vacationRequest);
+        }
     }
 
     public List<VacationRequestModel> getVacationRequestModels() {

@@ -41,15 +41,10 @@ public class UserService {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    public UserModel createUserInDatabase(UserModel userModel){
-
-        UserModel user = new UserModel();
-
+    public void createUserInDatabase(UserModel userModel){
         if(userModel != null){
-            user = userRepository.save(userModel);
-            return user;
-        } else
-            return user;
+           userRepository.save(userModel);
+        }
     }
 
     public boolean updateUser(UserModel userModel){
