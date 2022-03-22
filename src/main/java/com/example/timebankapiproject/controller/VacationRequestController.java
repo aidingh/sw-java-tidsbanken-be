@@ -26,6 +26,8 @@ public class VacationRequestController {
         this.vacationRequestService = vacationRequestService;
     }
 
+    //GET
+
     @CrossOrigin
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/all")
@@ -35,41 +37,44 @@ public class VacationRequestController {
 
     @CrossOrigin
     @GetMapping("/id/{vacation_id}")
-    public ResponseEntity<VacationRequestModel> getVacationRequestById(@PathVariable("vacation_id") int vacationRequestId) {
-        return vacationRequestService.getVacationById(vacationRequestId);
+    public ResponseEntity<VacationRequestDTO> getVacationRequestById(@PathVariable("vacation_id") int vacationRequestId) {
+        VacationRequestModel vacationRequestModel =  vacationRequestService.getVacationById(vacationRequestId);
+        VacationRequestDTO vacationRequestDTO  = modelMapper.map(vacationRequestModel, VacationRequestDTO.class);
+        return new ResponseEntity<>(vacationRequestDTO, HttpStatus.OK);
     }
 
     @CrossOrigin
-    @DeleteMapping("/{vacation_id}")
-    public void  deleteAVacationRequest(@PathVariable("vacation_id") int vacationRequestId) {
-        vacationRequestService.deleteVacationRequest(vacationRequestId);
+    @GetMapping("/approved")
+    @ResponseStatus(HttpStatus.OK)
+    public List<VacationRequestDTO> getApprovedVacationRequests() {
+        return vacationRequestService.getAllApprovedVacations().stream().map(vacationRequest -> modelMapper.map(vacationRequest, VacationRequestDTO.class)).collect(Collectors.toList());
     }
 
+    @CrossOrigin
+    @GetMapping("/{user_id}")
+    public ResponseEntity<List<VacationRequestDTO>> getUserVacationRequests(@PathVariable("user_id") String id) {
+        List<VacationRequestDTO> userVacations = vacationRequestService.getVacationRequestsByUserId(id).stream().map(vacationRequest -> modelMapper.map(vacationRequest, VacationRequestDTO.class)).collect(Collectors.toList());
+
+        return ResponseEntity.ok().body(userVacations);
+    }
+    //POST
     @CrossOrigin
     @PostMapping("/{user_id}/create")
-    public ResponseEntity<VacationRequestPostDTO> createVacationRequest(
+    public ResponseEntity<VacationRequestDTO> createVacationRequest(
             @RequestBody VacationRequestPostDTO vacationRequestPostDTO,
             @PathVariable String user_id) {
 
         VacationRequestModel vacationRequestModel = modelMapper.map(vacationRequestPostDTO, VacationRequestModel.class);
         VacationRequestModel vacation = vacationRequestService.createVacationRequest(vacationRequestModel, user_id);
-        VacationRequestPostDTO vacationRequestDTOResponse = modelMapper.map(vacation, VacationRequestPostDTO.class);
+        VacationRequestDTO vacationRequestDTOResponse = modelMapper.map(vacation, VacationRequestDTO.class);
         return new ResponseEntity<>(vacationRequestDTOResponse, HttpStatus.CREATED);
     }
 
-    //TODO Mer DTOS borde fixas
+    //DELETE
     @CrossOrigin
-    @GetMapping("/approved")
-    public ResponseEntity<List<VacationRequestModel>> getApprovedVacationRequests() {
-        return vacationRequestService.getAllApprovedVacations();
-    }
-
-    @CrossOrigin
-    @GetMapping("/{user_id}")
-    public ResponseEntity<List<VacationRequestModel>> getUserVacationRequests(@PathVariable("user_id") String id) {
-        List<VacationRequestModel> userVacations = vacationRequestService.getVacationRequestsByUserId(id);
-
-        return ResponseEntity.ok().body(userVacations);
+    @DeleteMapping("/{vacation_id}")
+    public void  deleteAVacationRequest(@PathVariable("vacation_id") int vacationRequestId) {
+        vacationRequestService.deleteVacationRequest(vacationRequestId);
     }
 
 }

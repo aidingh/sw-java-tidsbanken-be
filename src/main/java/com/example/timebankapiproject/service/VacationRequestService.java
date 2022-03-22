@@ -23,14 +23,13 @@ public class VacationRequestService {
     @Autowired
     private UserRepository userRepository;
 
-    public ResponseEntity<VacationRequestModel> getVacationById(int vacationRequestId) {
+    public VacationRequestModel getVacationById(int vacationRequestId) {
         VacationRequestModel vacationRequestModel;
-
         if (vacationRequestRepository.existsById(vacationRequestId)) {
             vacationRequestModel = vacationRequestRepository.findById(vacationRequestId).orElse(null);
-            return new ResponseEntity<>(vacationRequestModel, HttpStatus.OK);
+            return vacationRequestModel;
         } else
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            throw new ResourceNotFoundException("VacationRequestModel");
     }
     public List<VacationRequestModel> getAllVacations () {
         return vacationRequestRepository.findAll();
@@ -55,9 +54,7 @@ public class VacationRequestService {
         return null;
     }
 
-    //TODO Mer DTOS borde fixas
-
-    public ResponseEntity <List<VacationRequestModel>> getAllApprovedVacations() {
+    public List<VacationRequestModel> getAllApprovedVacations() {
         List<VacationRequestModel> vacations = vacationRequestRepository.findAll();
 
         List<VacationRequestModel> approvedVacations = vacations.stream().filter(element ->
@@ -65,19 +62,18 @@ public class VacationRequestService {
         ).collect(Collectors.toList());
 
         if (!approvedVacations.isEmpty()) {
-            return new ResponseEntity<>(approvedVacations, HttpStatus.OK);
+            return approvedVacations;
         } else {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+             new ResponseEntity<>(HttpStatus.NO_CONTENT);
+             return null;
         }
     }
 
     public List<VacationRequestModel> getVacationRequestsByUserId(String id) {
         Optional<UserModel> userOptional = userRepository.findById(id);
-
         if (userOptional.isPresent()) {
             return userOptional.get().getVacationRequestModels();
         }
-
         return null;
     }
 
