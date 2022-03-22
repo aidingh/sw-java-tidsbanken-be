@@ -80,4 +80,16 @@ public class VacationRequestService {
         VacationRequestModel vacationRequestModel = vacationRequestRepository.findById(vacationRequestId).orElseThrow(() -> new ResourceNotFoundException("VacationRequestModel"));
         vacationRequestRepository.delete(vacationRequestModel);
     }
+
+    public ResponseEntity<VacationRequestModel> updateVacationRequest(VacationRequestModel vacationRequestModel,
+                                                                      Integer id){
+        Optional<VacationRequestModel> vacationRequestData = vacationRequestRepository.findById(id);
+        if(vacationRequestData.isPresent()){
+            VacationRequestModel req = vacationRequestData.get();
+            req.setStatus(vacationRequestModel.getStatus());
+            VacationRequestModel result = vacationRequestRepository.save(req);
+            return new ResponseEntity<>(result,HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }

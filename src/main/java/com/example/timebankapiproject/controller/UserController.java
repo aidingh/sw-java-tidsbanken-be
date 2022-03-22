@@ -1,13 +1,14 @@
 package com.example.timebankapiproject.controller;
 
+import com.example.timebankapiproject.models.Auth0User;
 import com.example.timebankapiproject.models.UserModel;
 import com.example.timebankapiproject.models.VacationRequestModel;
 import com.example.timebankapiproject.service.Auth0Service;
 import com.example.timebankapiproject.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -35,9 +36,13 @@ public class UserController {
         return userService.getUserById(userId);
     }
 
+    @CrossOrigin
     @PostMapping("/createUser")
-    public ResponseEntity <String> createUser(@RequestBody UserModel userModel) {
+    public ResponseEntity <String> createUser(@RequestBody UserModel userModel) throws Exception{
         ResponseEntity<String> createdUser = auth0Service.createUserInAuth0(userModel);
+        if(createdUser.getStatusCode() == HttpStatus.CONFLICT){
+            return createdUser;
+        }
         String id = auth0Service.getUserIdFromAuth0(createdUser);
 
         userModel.setId(id);
@@ -45,26 +50,35 @@ public class UserController {
 
         if(userModel.isAdmin())
             auth0Service.giveRoleToAuth0User(id,"rol_Osy55j9CI34DLcQF");
-
+        else{
+            auth0Service.giveRoleToAuth0User(id,"rol_XuhdanLYToSuvKig");
+        }
         return createdUser;
     }
 
-    @PatchMapping("/updateUser")
-    public ResponseEntity <String> updateUser(@RequestBody UserModel userModel) {
-        ResponseEntity<String> updatedUser = null;
-
-            if(userService.updateUser(userModel))
-                updatedUser = auth0Service.updateUserInAuth0(userModel);
+    @PatchMapping("/updateUserAuth0")
+    public ResponseEntity <String> updateUserAuth0(@RequestBody Auth0User userModel) {
+        ResponseEntity<String> updatedUser = auth0Service.updateUserInAuth0(userModel);
 
         return updatedUser;
     }
+
+    /*@PatchMapping("/updateUser")
+    public ResponseEntity <String> updateUser(@RequestBody UserModel userModel) {
+        ResponseEntity<String> updatedUser = null;
+
+        if(userService.updateUser(userModel))
+            updatedUser = auth0Service.updateUserInAuth0(userModel);
+
+        return updatedUser;
+    }*/
 
     @DeleteMapping("/user/{user_id}")
     public ResponseEntity <String> deleteUser(@PathVariable("user_id") String userId){
         ResponseEntity<String> deletedUser = null;
 
-            if(userService.deleteUser(userId))
-                deletedUser = auth0Service.deleteUserInAuth0(userId);
+        if(userService.deleteUser(userId))
+            deletedUser = auth0Service.deleteUserInAuth0(userId);
 
         return deletedUser;
     }
@@ -80,5 +94,17 @@ public class UserController {
     public ResponseEntity<String> getUserRoleById(@PathVariable("user_id") String userId){
         String userRole = auth0Service.getUserRole(userId);
         return ResponseEntity.ok().body(userRole);
+    }
+
+    @GetMapping("/user/changePassword/{email}")
+    public boolean changeUserPassword(@PathVariable("email") String email){
+
+        try {
+            auth0Service.changeUserPassword(email);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }
