@@ -84,4 +84,10 @@ public class VacationRequestController {
         vacationRequestService.deleteVacationRequest(vacationRequestId);
     }
 
+    @PatchMapping("/{request_id}")
+    public ResponseEntity <VacationRequestModel> updateVacationRequest(@RequestBody VacationRequestModel vacationRequestModel,
+                                                                       @PathVariable("request_id") Integer id) {
+        return vacationRequestService.updateVacationRequest(vacationRequestModel,id);
+    }
+
 }
