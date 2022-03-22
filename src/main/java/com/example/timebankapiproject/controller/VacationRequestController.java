@@ -16,15 +16,16 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("api/v1/vacation")
+
 public class VacationRequestController {
 
-    @Autowired
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     private final VacationRequestService vacationRequestService;
 
-    public VacationRequestController(VacationRequestService vacationRequestService) {
+    public VacationRequestController(VacationRequestService vacationRequestService, ModelMapper modelMapper) {
         this.vacationRequestService = vacationRequestService;
+        this.modelMapper = modelMapper;
     }
 
     //GET
