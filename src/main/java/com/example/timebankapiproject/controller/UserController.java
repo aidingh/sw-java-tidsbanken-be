@@ -1,5 +1,6 @@
 package com.example.timebankapiproject.controller;
 
+import com.example.timebankapiproject.models.Auth0User;
 import com.example.timebankapiproject.models.UserModel;
 import com.example.timebankapiproject.models.VacationRequestModel;
 import com.example.timebankapiproject.service.Auth0Service;
@@ -8,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -56,7 +56,14 @@ public class UserController {
         return createdUser;
     }
 
-    @PatchMapping("/updateUser")
+    @PatchMapping("/updateUserAuth0")
+    public ResponseEntity <String> updateUserAuth0(@RequestBody Auth0User userModel) {
+        ResponseEntity<String> updatedUser = auth0Service.updateUserInAuth0(userModel);
+
+        return updatedUser;
+    }
+
+    /*@PatchMapping("/updateUser")
     public ResponseEntity <String> updateUser(@RequestBody UserModel userModel) {
         ResponseEntity<String> updatedUser = null;
 
@@ -64,7 +71,7 @@ public class UserController {
                 updatedUser = auth0Service.updateUserInAuth0(userModel);
 
         return updatedUser;
-    }
+    }*/
 
     @DeleteMapping("/user/{user_id}")
     public ResponseEntity <String> deleteUser(@PathVariable("user_id") String userId){
@@ -87,5 +94,19 @@ public class UserController {
     public ResponseEntity<String> getUserRoleById(@PathVariable("user_id") String userId){
         String userRole = auth0Service.getUserRole(userId);
         return ResponseEntity.ok().body(userRole);
+    }
+
+    @CrossOrigin
+    @GetMapping("user/changePassword/{mail}")
+    public ResponseEntity<String> getPasswordUrl(@PathVariable("mail") String mail){
+        ResponseEntity<String> hej = null;
+        try {
+            hej = auth0Service.change(mail);
+            return hej;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return hej;
     }
 }

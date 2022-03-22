@@ -1,5 +1,6 @@
 package com.example.timebankapiproject.service;
 
+import com.example.timebankapiproject.models.Auth0User;
 import com.example.timebankapiproject.models.UserModel;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
@@ -23,6 +24,33 @@ public class Auth0Service {
     private final String managementApiAudience = "https://dev-377qri7m.eu.auth0.com/api/v2/";
     private final String roleIdAdmin = "rol_Osy55j9CI34DLcQF";
 
+    public ResponseEntity<String> change(String mail) throws Exception{
+        JSONObject request = new JSONObject();
+        request.put("client_id", clientId);
+        request.put("email", mail);
+        request.put("connection", "Username-Password-Authentication");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("authorization", "Bearer " + getManagementApiToken());
+
+        HttpEntity<String> entity = new HttpEntity<String>(null, headers);
+
+        ResponseEntity<String> result = null;
+
+        try{
+            RestTemplate restTemplate = new RestTemplate();
+            result = restTemplate.postForEntity("https://dev-377qri7m.eu.auth0.com/dbconnections/change_password", entity, String.class);
+            return result;
+        }
+        catch(HttpStatusCodeException e){
+            if(e.getStatusCode() == HttpStatus.CONFLICT)
+            {
+                return new ResponseEntity<>("User already exists.",HttpStatus.CONFLICT);
+            }
+        }
+        return result;
+    }
 
     public ResponseEntity<String> createUserInAuth0(UserModel user) throws Exception{
         JSONObject request = new JSONObject();
@@ -55,14 +83,14 @@ public class Auth0Service {
         return result;
     }
     // TODO what should we update in AUTH0? we are just updating email/name atm.
-    public ResponseEntity<String> updateUserInAuth0(UserModel user){
+    public ResponseEntity<String> updateUserInAuth0(Auth0User user){
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("authorization", "Bearer " + getManagementApiToken());
 
         JSONObject request = new JSONObject();
         request.put("email", user.getEmail());
-        request.put("name", user.getEmail());
+        request.put("nickname",user.getNickname());
         request.put("connection", "Username-Password-Authentication");
 
         HttpEntity<String> entity = new HttpEntity<>(request.toString(), headers);
@@ -74,7 +102,7 @@ public class Auth0Service {
 
         ResponseEntity<String> result = restTemplate
                 .exchange(url,HttpMethod.PATCH, entity, String.class);
-
+        System.out.println(result.getBody() + "heeej");
         return result;
     }
 
