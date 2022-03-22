@@ -6,9 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.minidev.json.annotate.JsonIgnore;
-import org.apache.catalina.User;
-import org.springframework.lang.Nullable;
 
 
 import javax.persistence.*;
@@ -36,7 +33,7 @@ public class VacationRequestModel {
 
     @JsonBackReference
     @ManyToOne
-    @JoinColumn(name="user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private UserModel userModel;
 
 }
