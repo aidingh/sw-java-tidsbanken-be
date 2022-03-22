@@ -23,6 +23,22 @@ public class Auth0Service {
     private final String managementApiAudience = "https://dev-377qri7m.eu.auth0.com/api/v2/";
     private final String roleIdAdmin = "rol_Osy55j9CI34DLcQF";
 
+    public void changeUserPassword(String email){
+        JSONObject request = new JSONObject();
+        request.put("client_id", this.clientId);
+        request.put("email", email);
+        request.put("connection", "Username-Password-Authentication");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<String> entity = new HttpEntity<>(request.toString(), headers);
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        restTemplate.postForEntity("https://dev-377qri7m.eu.auth0.com/dbconnections/change_password", entity, String.class);
+    }
+
 
     public ResponseEntity<String> createUserInAuth0(UserModel user) throws Exception{
         JSONObject request = new JSONObject();

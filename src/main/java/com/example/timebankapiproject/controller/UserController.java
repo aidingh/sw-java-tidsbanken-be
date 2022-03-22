@@ -60,8 +60,8 @@ public class UserController {
     public ResponseEntity <String> updateUser(@RequestBody UserModel userModel) {
         ResponseEntity<String> updatedUser = null;
 
-            if(userService.updateUser(userModel))
-                updatedUser = auth0Service.updateUserInAuth0(userModel);
+        if(userService.updateUser(userModel))
+            updatedUser = auth0Service.updateUserInAuth0(userModel);
 
         return updatedUser;
     }
@@ -70,8 +70,8 @@ public class UserController {
     public ResponseEntity <String> deleteUser(@PathVariable("user_id") String userId){
         ResponseEntity<String> deletedUser = null;
 
-            if(userService.deleteUser(userId))
-                deletedUser = auth0Service.deleteUserInAuth0(userId);
+        if(userService.deleteUser(userId))
+            deletedUser = auth0Service.deleteUserInAuth0(userId);
 
         return deletedUser;
     }
@@ -87,5 +87,18 @@ public class UserController {
     public ResponseEntity<String> getUserRoleById(@PathVariable("user_id") String userId){
         String userRole = auth0Service.getUserRole(userId);
         return ResponseEntity.ok().body(userRole);
+    }
+
+    @CrossOrigin
+    @GetMapping("/user/changePassword/{email}")
+    public boolean changeUserPassword(@PathVariable("email") String email){
+
+        try {
+            auth0Service.changeUserPassword(email);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }
