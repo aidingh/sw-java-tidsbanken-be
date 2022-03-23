@@ -14,6 +14,7 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
+
 import java.util.HashMap;
 
 @Service
@@ -68,20 +69,17 @@ public class Auth0Service {
 
         ResponseEntity<String> result = null;
 
-        try{
+        try {
             RestTemplate restTemplate = new RestTemplate();
             result = restTemplate.postForEntity("https://dev-377qri7m.eu.auth0.com/api/v2/users", entity, String.class);
             return result;
-        }
-        catch(HttpStatusCodeException e){
-            if(e.getStatusCode() == HttpStatus.CONFLICT)
-            {
-                return new ResponseEntity<>("User already exists.",HttpStatus.CONFLICT);
+        } catch (HttpStatusCodeException e) {
+            if (e.getStatusCode() == HttpStatus.CONFLICT) {
+                return new ResponseEntity<>("User already exists.", HttpStatus.CONFLICT);
             }
         }
         return result;
     }
-
 
     /**
      * Updates a users information on Auth0 with the Auth0 management api.
@@ -95,12 +93,12 @@ public class Auth0Service {
 
         JSONObject request = new JSONObject();
         request.put("email", user.getEmail());
-        request.put("nickname",user.getNickname());
+        request.put("nickname", user.getNickname());
         request.put("connection", "Username-Password-Authentication");
 
         HttpEntity<String> entity = new HttpEntity<>(request.toString(), headers);
 
-        String url = "https://dev-377qri7m.eu.auth0.com/api/v2/users/" +"auth0|"+ user.getId();
+        String url = "https://dev-377qri7m.eu.auth0.com/api/v2/users/" + "auth0|" + user.getId();
 
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
@@ -123,9 +121,9 @@ public class Auth0Service {
         JSONObject request = new JSONObject();
         request.put("connection", "Username-Password-Authentication");
 
-        HttpEntity<String> entity = new HttpEntity<>(request.toString(),headers);
+        HttpEntity<String> entity = new HttpEntity<>(request.toString(), headers);
 
-        String url = "https://dev-377qri7m.eu.auth0.com/api/v2/users/" +"auth0|"+ userId;
+        String url = "https://dev-377qri7m.eu.auth0.com/api/v2/users/" + "auth0|" + userId;
 
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> result = restTemplate
@@ -141,7 +139,6 @@ public class Auth0Service {
      */
     public String getUserIdFromAuth0(ResponseEntity<String> response){
         JSONObject json = new JSONObject(response.getBody());
-
         String id = json.getJSONArray("identities").getJSONObject(0).get("user_id").toString();
 
         return id;
@@ -178,13 +175,11 @@ public class Auth0Service {
     public void giveRoleToAuth0User(String id, String role) {
         HttpResponse<String> roleResponse = null;
         try {
-            System.out.println("before");
-            roleResponse = Unirest.post( managementApiAudience + "users/auth0|" + id + "/roles")
+            roleResponse = Unirest.post(managementApiAudience + "users/auth0|" + id + "/roles")
                     .header("content-type", "application/json")
                     .header("authorization", "Bearer " + getManagementApiToken())
                     .header("cache-control", "no-cache")
-                    .body("{ \"roles\": [ \"rol_Osy55j9CI34DLcQF\"] }").asString();
-            System.out.println("before");
+                    .body("{ \"roles\": [ \""+role+"\"] }").asString();
 
         } catch (UnirestException e) {
             System.out.println("print stack");
@@ -195,7 +190,7 @@ public class Auth0Service {
 
     }
 
-    public String getUserRole(String id){
+    public String getUserRole(String id) {
         HttpResponse<JsonNode> response = null;
 
         try {

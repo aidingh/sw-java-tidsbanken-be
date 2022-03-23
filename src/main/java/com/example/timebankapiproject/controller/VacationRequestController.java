@@ -85,6 +85,7 @@ public class VacationRequestController {
         vacationRequestService.deleteVacationRequest(vacationRequestId);
     }
 
+    @CrossOrigin
     @PatchMapping("/{request_id}")
     public ResponseEntity <VacationRequestModel> updateVacationRequest(@RequestBody VacationRequestModel vacationRequestModel,
                                                                        @PathVariable("request_id") Integer id) {
