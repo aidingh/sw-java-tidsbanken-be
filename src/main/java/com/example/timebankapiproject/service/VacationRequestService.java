@@ -27,6 +27,19 @@ public class VacationRequestService {
         this.userRepository = userRepository;
     }
 
+    /**
+     * Fetches all the vacation requests from the database.
+     * @return all vacation requests
+     */
+    public List<VacationRequestModel> getAllVacations() {
+        return vacationRequestRepository.findAll();
+    }
+
+    /**
+     * Returns a vacation request by id.
+     * @param vacationRequestId vacation request id.
+     * @return a vacation request on success or ResourceNotFoundException.
+     */
     public VacationRequestModel getVacationById(int vacationRequestId) {
         VacationRequestModel vacationRequestModel;
         if (vacationRequestRepository.existsById(vacationRequestId)) {
@@ -35,11 +48,12 @@ public class VacationRequestService {
         } else throw new ResourceNotFoundException("VacationRequestModel");
     }
 
-    public List<VacationRequestModel> getAllVacations() {
-        return vacationRequestRepository.findAll();
-    }
-
-
+    /**
+     * Creates a new vacation request only if the user exists in the database
+     * @param vacationRequestModel vacation request
+     * @param id user id
+     * @return the created vacation request on success or null.
+     */
     public VacationRequestModel createVacationRequest(VacationRequestModel vacationRequestModel, String id) {
         if (userRepository.existsById(id)) {
             UserModel user = userRepository.findById(id).orElse(null);
@@ -51,13 +65,16 @@ public class VacationRequestService {
                 user.setVacationRequestModel(vacationRequestModel);
                 userRepository.save(user);
             }
-
             return vacationRequest;
         }
 
         return null;
     }
 
+    /**
+     * Fetches all the approved vacation requests.
+     * @return a list of all approved vacation requests on success or status code 204 with null.
+     */
     public List<VacationRequestModel> getAllApprovedVacations() {
         List<VacationRequestModel> vacations = vacationRequestRepository.findAll();
 
@@ -66,21 +83,36 @@ public class VacationRequestService {
         if (!approvedVacations.isEmpty()) {
             return approvedVacations;
         } else {
-            new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            return null;
+           new ResponseEntity<>(HttpStatus.NO_CONTENT);
+           return null;
         }
     }
 
+    /**
+     * Returns a list of vacation requests of the corresponding user.
+     * @param id user id
+     * @return the corresponding vacation request by user id or null.
+     */
     public List<VacationRequestModel> getVacationRequestsByUserId(String id) {
         Optional<UserModel> userOptional = userRepository.findById(id);
         return userOptional.map(UserModel::getVacationRequestModels).orElse(null);
     }
 
+    /**
+     * Deletes (cascading) a vacation request or throws ResourceNotFoundException
+     * @param vacationRequestId vacation request id.
+     */
     public void deleteVacationRequest(int vacationRequestId) {
         VacationRequestModel vacationRequestModel = vacationRequestRepository.findById(vacationRequestId).orElseThrow(() -> new ResourceNotFoundException("VacationRequestModel"));
         vacationRequestRepository.delete(vacationRequestModel);
     }
 
+    /**
+     * If the request_id exists update the status and save it in the database.
+     * @param vacationRequestModel vacation request object.
+     * @param id request id.
+     * @return status code 200 in success with the vacation request object or 500 in fail.
+     */
     public ResponseEntity<VacationRequestModel> updateVacationRequest(VacationRequestModel vacationRequestModel,
                                                                       Integer id){
         Optional<VacationRequestModel> vacationRequestData = vacationRequestRepository.findById(id);
