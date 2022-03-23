@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * API that handles all functionality for vacation requests.
+ */
 @RestController
 @RequestMapping("api/v1/vacation")
 
@@ -28,8 +31,10 @@ public class VacationRequestController {
         this.modelMapper = modelMapper;
     }
 
-    //GET
-
+    /**
+     * Fetches all the vacation requests.
+     * @return HTTP response status code 200 with a list of all the vacation requests.
+     */
     @Operation(summary = "Gets all vacation requests")
     @CrossOrigin
     @ResponseStatus(HttpStatus.OK)
@@ -47,6 +52,11 @@ public class VacationRequestController {
         return dtoList;
     }
 
+    /**
+     * Fetches a vacation request by id.
+     * @param vacationRequestId vacation request id.
+     * @return HTTP response status code 200 with a vacation request.
+     */
     @Operation(summary = "Get a vacation requests")
     @CrossOrigin
     @GetMapping("/id/{vacation_id}")
@@ -56,6 +66,31 @@ public class VacationRequestController {
         return new ResponseEntity<>(vacationRequestDTO, HttpStatus.OK);
     }
 
+    /**
+     * Creates a new vacation request.
+     * @param vacationRequestPostDTO vacationRequest DTO.
+     * @param user_id user id.
+     * @return status code 201 with the vacation request or null.
+     */
+    @Operation(summary = "Create a vacation request")
+    @CrossOrigin
+    @PostMapping("/{user_id}/create")
+    public ResponseEntity<VacationRequestDTO> createVacationRequest(
+            @RequestBody VacationRequestPostDTO vacationRequestPostDTO,
+            @PathVariable String user_id) {
+
+        VacationRequestModel vacationRequestModel = modelMapper.map(vacationRequestPostDTO, VacationRequestModel.class);
+        VacationRequestModel vacation = vacationRequestService.createVacationRequest(vacationRequestModel, user_id);
+        VacationRequestDTO vacationDTO = modelMapper.map(vacation, VacationRequestDTO.class);
+
+        vacationDTO.setTitle(vacationDTO.getUserModel().getFirstName() + " " + vacationDTO.getUserModel().getLastName() + " - " + vacationDTO.getTitle());
+        return new ResponseEntity<>(vacationDTO, HttpStatus.CREATED);
+    }
+
+    /**
+     * Fetches all the approved vacation request.
+     * @return  status code 200 with the approved vacation request.
+     */
     @Operation(summary = "Gets all approved vacation requests")
     @CrossOrigin
     @GetMapping("/approved")
@@ -73,6 +108,11 @@ public class VacationRequestController {
         return dtoList;
     }
 
+    /**
+     * Returns a list of vacation requests objects owned by the corresponding user.
+     * @param id user id.
+     * @return status code 200 with a list of vacation request.
+     */
     @Operation(summary = "Get all vacation requests a specific user has")
     @CrossOrigin
     @GetMapping("/{user_id}")
@@ -84,23 +124,11 @@ public class VacationRequestController {
         });
         return ResponseEntity.ok().body(userVacations);
     }
-    //POST
-    @Operation(summary = "Create a vacation request")
-    @CrossOrigin
-    @PostMapping("/{user_id}/create")
-    public ResponseEntity<VacationRequestDTO> createVacationRequest(
-            @RequestBody VacationRequestPostDTO vacationRequestPostDTO,
-            @PathVariable String user_id) {
 
-        VacationRequestModel vacationRequestModel = modelMapper.map(vacationRequestPostDTO, VacationRequestModel.class);
-        VacationRequestModel vacation = vacationRequestService.createVacationRequest(vacationRequestModel, user_id);
-        VacationRequestDTO vacationDTO = modelMapper.map(vacation, VacationRequestDTO.class);
-
-        vacationDTO.setTitle(vacationDTO.getUserModel().getFirstName() + " " + vacationDTO.getUserModel().getLastName() + " - " + vacationDTO.getTitle());
-        return new ResponseEntity<>(vacationDTO, HttpStatus.CREATED);
-    }
-
-    //DELETE
+    /**
+     * Deletes (cascading) a vacation request.
+     * @param vacationRequestId vacation request id.
+     */
     @Operation(summary = "Delete a vacation request")
     @CrossOrigin
     @DeleteMapping("/{vacation_id}")
@@ -108,11 +136,16 @@ public class VacationRequestController {
         vacationRequestService.deleteVacationRequest(vacationRequestId);
     }
 
+    /**
+     * Partial updates the status of the vacation request of the corresponding request_id.
+     * @param vacationRequestModel vacation request object.
+     * @param request_id vacation request id.
+     * @return HTTP response status code.
+     */
     @CrossOrigin
     @PatchMapping("/{request_id}")
     public ResponseEntity <VacationRequestModel> updateVacationRequest(@RequestBody VacationRequestModel vacationRequestModel,
-                                                                       @PathVariable("request_id") Integer id) {
-        return vacationRequestService.updateVacationRequest(vacationRequestModel,id);
+                                                                       @PathVariable("request_id") Integer request_id) {
+        return vacationRequestService.updateVacationRequest(vacationRequestModel,request_id);
     }
-
 }
