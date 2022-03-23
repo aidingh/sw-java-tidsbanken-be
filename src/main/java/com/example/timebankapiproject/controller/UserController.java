@@ -58,7 +58,7 @@ public class UserController {
 
     @CrossOrigin
     @PatchMapping("/updateUser")
-    public ResponseEntity <String> updateUserAuth0(@RequestBody Auth0User userAuth0) {
+    public ResponseEntity <String> updateUser(@RequestBody Auth0User userAuth0) {
         UserModel user = userService.findUserById(userAuth0.getId());
         user.setEmail(userAuth0.getEmail());
         userService.saveUser(user);
@@ -67,16 +67,6 @@ public class UserController {
 
         return updatedUser;
     }
-
-    /*@PatchMapping("/updateUser")
-    public ResponseEntity <String> updateUser(@RequestBody UserModel userModel) {
-        ResponseEntity<String> updatedUser = null;
-
-        if(userService.updateUser(userModel))
-            updatedUser = auth0Service.updateUserInAuth0(userModel);
-
-        return updatedUser;
-    }*/
 
     @DeleteMapping("/user/{user_id}")
     public ResponseEntity <String> deleteUser(@PathVariable("user_id") String userId){
