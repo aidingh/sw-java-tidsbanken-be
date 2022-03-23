@@ -47,7 +47,6 @@ public class UserController {
 
         userModel.setId(id);
         userService.createUserInDatabase(userModel);
-
         if(userModel.isAdmin())
             auth0Service.giveRoleToAuth0User(id,"rol_Osy55j9CI34DLcQF");
         else{

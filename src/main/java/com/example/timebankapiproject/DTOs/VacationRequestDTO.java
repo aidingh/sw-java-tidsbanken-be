@@ -11,6 +11,8 @@ import java.time.LocalDate;
 
 @Data
 public class VacationRequestDTO {
+    private Integer id;
+
     private String title;
 
     private VacationRequestStatus status;

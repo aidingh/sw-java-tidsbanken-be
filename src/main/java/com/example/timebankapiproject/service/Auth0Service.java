@@ -13,6 +13,7 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
+
 import java.util.HashMap;
 
 @Service
@@ -24,7 +25,7 @@ public class Auth0Service {
     private final String managementApiAudience = "https://dev-377qri7m.eu.auth0.com/api/v2/";
     private final String roleIdAdmin = "rol_Osy55j9CI34DLcQF";
 
-    public void changeUserPassword(String email){
+    public void changeUserPassword(String email) {
         JSONObject request = new JSONObject();
         request.put("client_id", this.clientId);
         request.put("email", email);
@@ -40,7 +41,7 @@ public class Auth0Service {
         restTemplate.postForEntity("https://dev-377qri7m.eu.auth0.com/dbconnections/change_password", entity, String.class);
     }
 
-    public ResponseEntity<String> createUserInAuth0(UserModel user) throws Exception{
+    public ResponseEntity<String> createUserInAuth0(UserModel user) throws Exception {
         JSONObject request = new JSONObject();
         request.put("email", user.getEmail());
         request.put("given_name", user.getFirstName());
@@ -57,44 +58,43 @@ public class Auth0Service {
 
         ResponseEntity<String> result = null;
 
-        try{
+        try {
             RestTemplate restTemplate = new RestTemplate();
             result = restTemplate.postForEntity("https://dev-377qri7m.eu.auth0.com/api/v2/users", entity, String.class);
             return result;
-        }
-        catch(HttpStatusCodeException e){
-            if(e.getStatusCode() == HttpStatus.CONFLICT)
-            {
-                return new ResponseEntity<>("User already exists.",HttpStatus.CONFLICT);
+        } catch (HttpStatusCodeException e) {
+            if (e.getStatusCode() == HttpStatus.CONFLICT) {
+                return new ResponseEntity<>("User already exists.", HttpStatus.CONFLICT);
             }
         }
         return result;
     }
+
     // TODO what should we update in AUTH0? we are just updating email/name atm.
-    public ResponseEntity<String> updateUserInAuth0(Auth0User user){
+    public ResponseEntity<String> updateUserInAuth0(Auth0User user) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("authorization", "Bearer " + getManagementApiToken());
 
         JSONObject request = new JSONObject();
         request.put("email", user.getEmail());
-        request.put("nickname",user.getNickname());
+        request.put("nickname", user.getNickname());
         request.put("connection", "Username-Password-Authentication");
 
         HttpEntity<String> entity = new HttpEntity<>(request.toString(), headers);
 
-        String url = "https://dev-377qri7m.eu.auth0.com/api/v2/users/" +"auth0|"+ user.getId();
+        String url = "https://dev-377qri7m.eu.auth0.com/api/v2/users/" + "auth0|" + user.getId();
 
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
 
         ResponseEntity<String> result = restTemplate
-                .exchange(url,HttpMethod.PATCH, entity, String.class);
+                .exchange(url, HttpMethod.PATCH, entity, String.class);
         System.out.println(result.getBody() + "heeej");
         return result;
     }
 
-    public ResponseEntity<String> deleteUserInAuth0(String userId){
+    public ResponseEntity<String> deleteUserInAuth0(String userId) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("authorization", "Bearer " + getManagementApiToken());
@@ -102,9 +102,9 @@ public class Auth0Service {
         JSONObject request = new JSONObject();
         request.put("connection", "Username-Password-Authentication");
 
-        HttpEntity<String> entity = new HttpEntity<>(request.toString(),headers);
+        HttpEntity<String> entity = new HttpEntity<>(request.toString(), headers);
 
-        String url = "https://dev-377qri7m.eu.auth0.com/api/v2/users/" +"auth0|"+ userId;
+        String url = "https://dev-377qri7m.eu.auth0.com/api/v2/users/" + "auth0|" + userId;
 
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> result = restTemplate
@@ -114,7 +114,7 @@ public class Auth0Service {
     }
 
 
-    public String getUserIdFromAuth0(ResponseEntity<String> response){
+    public String getUserIdFromAuth0(ResponseEntity<String> response) {
         JSONObject json = new JSONObject(response.getBody().toString());
         JSONArray jsonArray = json.getJSONArray("identities");
         JSONObject nestedJson = new JSONObject(jsonArray.getJSONObject(0));
@@ -148,13 +148,11 @@ public class Auth0Service {
     public void giveRoleToAuth0User(String id, String role) {
         HttpResponse<String> roleResponse = null;
         try {
-            System.out.println("before");
-            roleResponse = Unirest.post( managementApiAudience + "users/auth0|" + id + "/roles")
+            roleResponse = Unirest.post(managementApiAudience + "users/auth0|" + id + "/roles")
                     .header("content-type", "application/json")
                     .header("authorization", "Bearer " + getManagementApiToken())
                     .header("cache-control", "no-cache")
-                    .body("{ \"roles\": [ \"rol_Osy55j9CI34DLcQF\"] }").asString();
-            System.out.println("before");
+                    .body("{ \"roles\": [ \""+role+"\"] }").asString();
 
         } catch (UnirestException e) {
             System.out.println("print stack");
@@ -165,7 +163,7 @@ public class Auth0Service {
 
     }
 
-    public String getUserRole(String id){
+    public String getUserRole(String id) {
         HttpResponse<JsonNode> response = null;
 
         try {
