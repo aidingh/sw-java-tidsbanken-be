@@ -1,31 +1,29 @@
 package com.example.timebankapiproject.service;
-
 import com.example.timebankapiproject.models.Auth0User;
 import com.example.timebankapiproject.models.UserModel;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
-
 import java.util.HashMap;
 
 @Service
 public class Auth0Service {
-
-
     private final String clientId = "gcpFQMIuEMTPdur0XhbRekUKWLSsLF3K";
     private final String clientSecret = "RTEExKEXK603fBA11Y4s22IsaBV95PE3YvvK3A6fVwa-_ms16Gp9JHvmjLQiq0dN";
     private final String managementApiAudience = "https://dev-377qri7m.eu.auth0.com/api/v2/";
-    private final String roleIdAdmin = "rol_Osy55j9CI34DLcQF";
 
-    public void changeUserPassword(String email) {
+    /**
+     * Triggers an email being sent to the provided email adress with a link to change the password.
+     * @param email email adress the change-password-link is being sent to.
+     */
+    public void changeUserPassword(String email){
         JSONObject request = new JSONObject();
         request.put("client_id", this.clientId);
         request.put("email", email);
@@ -41,13 +39,20 @@ public class Auth0Service {
         restTemplate.postForEntity("https://dev-377qri7m.eu.auth0.com/dbconnections/change_password", entity, String.class);
     }
 
-    public ResponseEntity<String> createUserInAuth0(UserModel user) throws Exception {
+    /**
+     * Creates a user on the Auth0 database with the Auth0 management api.
+     * Sets a default password to the account that is created.
+     * Frontend informs that this password should be changed by the created user immediately.
+     * returns a error message if the user already exists.
+     * @param user user to be created.
+     * @return The created user.
+     */
+    public ResponseEntity<String> createUserInAuth0(UserModel user) {
         JSONObject request = new JSONObject();
         request.put("email", user.getEmail());
         request.put("given_name", user.getFirstName());
         request.put("family_name", user.getLastName());
         request.put("connection", "Username-Password-Authentication");
-        // TODO ask team how we should do with password creation and getting it to the created user.
         request.put("password", "hej/23vad&och%");
 
         HttpHeaders headers = new HttpHeaders();
@@ -70,8 +75,12 @@ public class Auth0Service {
         return result;
     }
 
-    // TODO what should we update in AUTH0? we are just updating email/name atm.
-    public ResponseEntity<String> updateUserInAuth0(Auth0User user) {
+    /**
+     * Updates a users information on Auth0 with the Auth0 management api.
+     * @param user contains the new updated user information.
+     * @return The updated user.
+     */
+    public ResponseEntity<String> updateUserInAuth0(Auth0User user){
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("authorization", "Bearer " + getManagementApiToken());
@@ -89,12 +98,16 @@ public class Auth0Service {
         restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
 
         ResponseEntity<String> result = restTemplate
-                .exchange(url, HttpMethod.PATCH, entity, String.class);
-        System.out.println(result.getBody() + "heeej");
+                .exchange(url,HttpMethod.PATCH, entity, String.class);
         return result;
     }
 
-    public ResponseEntity<String> deleteUserInAuth0(String userId) {
+    /**
+     * Deletes a user from Auth0.
+     * @param userId id of user to be deleted
+     * @return result from deletion.
+     */
+    public ResponseEntity<String> deleteUserInAuth0(String userId){
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("authorization", "Bearer " + getManagementApiToken());
@@ -113,19 +126,22 @@ public class Auth0Service {
         return result;
     }
 
-
-    public String getUserIdFromAuth0(ResponseEntity<String> response) {
-        JSONObject json = new JSONObject(response.getBody().toString());
-        JSONArray jsonArray = json.getJSONArray("identities");
-        JSONObject nestedJson = new JSONObject(jsonArray.getJSONObject(0));
-
-        System.out.println(json.getJSONArray("identities").getJSONObject(0).get("user_id"));
-
+    /**
+     * Extracts the users Auth0 id from a response.
+     * @param response
+     * @return Users Auth0 id.
+     */
+    public String getUserIdFromAuth0(ResponseEntity<String> response){
+        JSONObject json = new JSONObject(response.getBody());
         String id = json.getJSONArray("identities").getJSONObject(0).get("user_id").toString();
 
         return id;
     }
 
+    /**
+     * Fetches the api token needed to access the Auth0 management api.
+     * @return Returns the token.
+     */
     private String getManagementApiToken() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -145,6 +161,11 @@ public class Auth0Service {
         return result.get("access_token");
     }
 
+    /**
+     *  Gives user on Auth0 a specific role via the Auth0 management api.
+     * @param id The Id of the user that will be assigned a role.
+     * @param role The role the user will get.
+     */
     public void giveRoleToAuth0User(String id, String role) {
         HttpResponse<String> roleResponse = null;
         try {
@@ -155,14 +176,15 @@ public class Auth0Service {
                     .body("{ \"roles\": [ \""+role+"\"] }").asString();
 
         } catch (UnirestException e) {
-            System.out.println("print stack");
             e.printStackTrace();
         }
-        System.out.println("headers " + roleResponse.getHeaders());
-        System.out.println("body " + roleResponse.getBody());
-
     }
 
+    /**
+     * Fethces the role if a user by its id.
+     * @param id Auth0 id of the user which role is to be fetched.
+     * @return
+     */
     public String getUserRole(String id) {
         HttpResponse<JsonNode> response = null;
 
@@ -175,6 +197,4 @@ public class Auth0Service {
         }
         return response.getBody().toString();
     }
-
-
 }
