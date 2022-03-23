@@ -1,26 +1,20 @@
-
 package com.example.timebankapiproject.service;
-
 import com.example.timebankapiproject.models.Auth0User;
 import com.example.timebankapiproject.models.UserModel;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
-
 import java.util.HashMap;
 
 @Service
 public class Auth0Service {
-
-
     private final String clientId = "gcpFQMIuEMTPdur0XhbRekUKWLSsLF3K";
     private final String clientSecret = "RTEExKEXK603fBA11Y4s22IsaBV95PE3YvvK3A6fVwa-_ms16Gp9JHvmjLQiq0dN";
     private final String managementApiAudience = "https://dev-377qri7m.eu.auth0.com/api/v2/";
@@ -168,9 +162,9 @@ public class Auth0Service {
     }
 
     /**
-     *
-     * @param id
-     * @param role
+     *  Gives user on Auth0 a specific role via the Auth0 management api.
+     * @param id The Id of the user that will be assigned a role.
+     * @param role The role the user will get.
      */
     public void giveRoleToAuth0User(String id, String role) {
         HttpResponse<String> roleResponse = null;
@@ -182,14 +176,15 @@ public class Auth0Service {
                     .body("{ \"roles\": [ \""+role+"\"] }").asString();
 
         } catch (UnirestException e) {
-            System.out.println("print stack");
             e.printStackTrace();
         }
-        System.out.println("headers " + roleResponse.getHeaders());
-        System.out.println("body " + roleResponse.getBody());
-
     }
 
+    /**
+     * Fethces the role if a user by its id.
+     * @param id Auth0 id of the user which role is to be fetched.
+     * @return
+     */
     public String getUserRole(String id) {
         HttpResponse<JsonNode> response = null;
 
@@ -202,6 +197,4 @@ public class Auth0Service {
         }
         return response.getBody().toString();
     }
-
-
 }
