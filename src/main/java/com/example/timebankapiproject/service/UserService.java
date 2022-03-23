@@ -46,17 +46,18 @@ public class UserService {
            userRepository.save(userModel);
         }
     }
+    public UserModel findUserById(String id){
+        Optional<UserModel> user = userRepository.findById(id);
+        if(user.isPresent()){
+            return user.get();
+        }
+        else{
+            return null;
+        }
+    }
 
-    public boolean updateUser(UserModel userModel){
-
-        Optional<UserModel> userData = userRepository.findById(userModel.getId());
-        if(userData.isPresent()){
-            UserModel user = userData.get();
-            user.setEmail(userModel.getEmail());
-            userRepository.save(user);
-            return true;
-        } else
-            return false;
+    public void saveUser(UserModel user){
+        userRepository.save(user);
     }
 
     public boolean deleteUser(String userId){
