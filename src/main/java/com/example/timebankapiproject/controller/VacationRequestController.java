@@ -40,7 +40,16 @@ public class VacationRequestController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/all")
     public List<VacationRequestDTO> getVacations() {
-        return vacationRequestService.getAllVacations().stream().map(vacationRequest -> modelMapper.map(vacationRequest, VacationRequestDTO.class)).collect(Collectors.toList());
+        List<VacationRequestDTO> dtoList = vacationRequestService.getAllVacations()
+                .stream()
+                .map(vacationRequest -> modelMapper.map(vacationRequest, VacationRequestDTO.class))
+                .collect(Collectors.toList());
+
+        dtoList.forEach( element -> {
+            element.setTitle(element.getUserModel().getFirstName() + " " + element.getUserModel().getLastName() + " - " + element.getTitle());
+        });
+
+        return dtoList;
     }
 
     /**
@@ -72,8 +81,10 @@ public class VacationRequestController {
 
         VacationRequestModel vacationRequestModel = modelMapper.map(vacationRequestPostDTO, VacationRequestModel.class);
         VacationRequestModel vacation = vacationRequestService.createVacationRequest(vacationRequestModel, user_id);
-        VacationRequestDTO vacationRequestDTOResponse = modelMapper.map(vacation, VacationRequestDTO.class);
-        return new ResponseEntity<>(vacationRequestDTOResponse, HttpStatus.CREATED);
+        VacationRequestDTO vacationDTO = modelMapper.map(vacation, VacationRequestDTO.class);
+
+        vacationDTO.setTitle(vacationDTO.getUserModel().getFirstName() + " " + vacationDTO.getUserModel().getLastName() + " - " + vacationDTO.getTitle());
+        return new ResponseEntity<>(vacationDTO, HttpStatus.CREATED);
     }
 
     /**
@@ -85,7 +96,16 @@ public class VacationRequestController {
     @GetMapping("/approved")
     @ResponseStatus(HttpStatus.OK)
     public List<VacationRequestDTO> getApprovedVacationRequests() {
-        return vacationRequestService.getAllApprovedVacations().stream().map(vacationRequest -> modelMapper.map(vacationRequest, VacationRequestDTO.class)).collect(Collectors.toList());
+        List<VacationRequestDTO> dtoList = vacationRequestService.getAllApprovedVacations()
+                .stream()
+                .map(vacationRequest -> modelMapper.map(vacationRequest, VacationRequestDTO.class))
+                .collect(Collectors.toList());
+
+        dtoList.forEach( element -> {
+            element.setTitle(element.getUserModel().getFirstName() + " " + element.getUserModel().getLastName() + " - " + element.getTitle());
+        });
+
+        return dtoList;
     }
 
     /**
@@ -98,6 +118,10 @@ public class VacationRequestController {
     @GetMapping("/{user_id}")
     public ResponseEntity<List<VacationRequestDTO>> getUserVacationRequests(@PathVariable("user_id") String id) {
         List<VacationRequestDTO> userVacations = vacationRequestService.getVacationRequestsByUserId(id).stream().map(vacationRequest -> modelMapper.map(vacationRequest, VacationRequestDTO.class)).collect(Collectors.toList());
+
+        userVacations.forEach( element -> {
+            element.setTitle(element.getUserModel().getFirstName() + " " + element.getUserModel().getLastName() + " - " + element.getTitle());
+        });
         return ResponseEntity.ok().body(userVacations);
     }
 
