@@ -87,7 +87,7 @@ public class Auth0Service {
 
         JSONObject request = new JSONObject();
         request.put("email", user.getEmail());
-        request.put("nickname", user.getNickname());
+        request.put("nickname", user.getEmail());
         request.put("connection", "Username-Password-Authentication");
 
         HttpEntity<String> entity = new HttpEntity<>(request.toString(), headers);
